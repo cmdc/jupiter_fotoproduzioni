@@ -13,8 +13,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    template: "Thy Umwelt | %s ",
-    default: "Thy Umwelt",
+    template: "Jupiter Foto | %s ",
+    default: "Jupiter Foto",
   },
   description: "A website by Ashwin Manghat",
 };

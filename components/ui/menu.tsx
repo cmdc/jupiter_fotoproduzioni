@@ -19,9 +19,9 @@ export default function Menu() {
         <div className="flex lg:flex-1">
           <Link href="/" className="m-2.5 p-2">
             <p className="scroll-m-20 text-md font-extrabold tracking-tight lg:text-lg select-none">
-              Thy Umwelt
+              Jupiter Foto
             </p>
-            <span className="sr-only">Thy Umwelt</span>
+            <span className="sr-only">Jupiter Foto</span>
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -59,9 +59,9 @@ export default function Menu() {
               onClick={() => setMobileMenuOpen(false)}
             >
               <p className="scroll-m-20 text-md font-extrabold tracking-tight lg:text-lg select-none">
-                Thy Umwelt
+                Jupiter Foto
               </p>
-              <span className="sr-only">Thy Umwelt</span>
+              <span className="sr-only">Jupiter Foto</span>
             </Link>
             <button
               type="button"

@@ -19,7 +19,7 @@ export default function Home() {
         <div className="text-center select-none">
           <h1 className="text-5xl font-bold tracking-tight  sm:text-6xl select-none">
             <AnimatedText
-              text="Umwelt"
+              text="Jupiter"
               once
               className="text-5xl font-bold tracking-tight  sm:text-6xl select-none"
             />
@@ -33,7 +33,7 @@ export default function Home() {
             </p>
           </blockquote>
           <p className="my-6 mb-12 text-sm md:leading-8 text-muted-foreground select-none">
-            &quot;the worlds they perceive, their Umwelten, are all
+            &quot;the worlds they perceive, their Jupiteren, are all
             different&quot;
           </p>
           <Separator />

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 13+ photography portfolio website ("Thy Umwelt") that showcases photography series and projects. The site uses Contentful CMS as a headless CMS for content management and features a modern stack with TypeScript, Tailwind CSS, and Framer Motion.
+This is a Next.js 13+ photography portfolio website ("Jupiter Foto") that showcases photography series and projects. The site uses Contentful CMS as a headless CMS for content management and features a modern stack with TypeScript, Tailwind CSS, and Framer Motion.
 
 ## Technology Stack
 
@@ -40,22 +40,25 @@ yarn lint
 ## Project Architecture
 
 ### App Structure (Next.js App Router)
+
 - `/app` - Main application routes using App Router
   - `layout.tsx` - Root layout with navigation, theme providers, and Google Analytics
   - `page.tsx` - Home page
   - `/photography` - Photography gallery routes
-  - `/photo-series` - Photography series routes  
+  - `/photo-series` - Photography series routes
   - `/projects` - Projects showcase
   - `/about` - About page
   - `/@modal` - Parallel route for modal functionality
 
 ### Components
+
 - `/components/ui` - Reusable UI components (cards, buttons, navigation, etc.)
 - `/components/swiper` - Custom Swiper.js implementation
 - `/components/particles.tsx` - Background particle effects
 - Custom components built on Radix UI primitives
 
 ### Utilities & Libraries
+
 - `/lib` - Shared utilities and configurations
   - `contentful-loader.tsx` - Custom image loader for Contentful
   - `providers.tsx` - Theme and context providers
@@ -66,6 +69,7 @@ yarn lint
 ## Key Configuration
 
 ### Path Aliases (tsconfig.json)
+
 ```json
 {
   "@/*": ["./*"],
@@ -77,18 +81,22 @@ yarn lint
 ```
 
 ### Image Handling
+
 - Custom Contentful image loader with WebP optimization
 - Blur placeholders using @plaiceholder/next
 - Images served from `images.ctfassets.net`
 
 ### Environment Variables
+
 The project requires Contentful API configuration:
+
 - `NEXT_PUBLIC_CONTENTFUL_SPACE_ID`
 - `NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN`
 
 ## Content Management
 
 The site uses Contentful's GraphQL API for content delivery. Key content types include:
+
 - Photography Series (`photographySeriesCollection`)
 - Individual photos with metadata
 - Project information
