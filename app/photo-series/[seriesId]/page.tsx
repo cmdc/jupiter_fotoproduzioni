@@ -16,25 +16,60 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { seriesId } = params;
-  const data_ = await getPhotoSeries();
-  const data = data_.props.images.filter(
-    (image: any) => image.slug === seriesId
-  )[0];
-  // const data = await getASeries(seriesId);
+  
+  // Skip metadata generation if Contentful credentials are not configured
+  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+    return {
+      title: `Photo Series | ${seriesId}`,
+      description: 'Photography series',
+    };
+  }
+  
+  try {
+    const data_ = await getPhotoSeries();
+    const data = data_.props.images.filter(
+      (image: any) => image.slug === seriesId
+    )[0];
 
-  return {
-    title: `Photo Series | ${data.seriesTitle}`,
-    description: data.description,
-  };
+    if (!data) {
+      return {
+        title: `Photo Series | ${seriesId}`,
+        description: 'Photography series',
+      };
+    }
+
+    return {
+      title: `Photo Series | ${data.seriesTitle}`,
+      description: data.description,
+    };
+  } catch (error) {
+    console.warn('Failed to generate metadata for photo-series:', error);
+    return {
+      title: `Photo Series | ${seriesId}`,
+      description: 'Photography series',
+    };
+  }
 }
 
 export async function generateStaticParams() {
-  const data_ = await getPhotoSeries();
-  const data = data_.props.images;
-  return data.map((image: any) => ({
-    seriesId: image.slug.toString(),
-    revalidate: 86400,
-  }));
+  // Skip static generation if Contentful credentials are not configured
+  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+    return [];
+  }
+  
+  try {
+    const data_ = await getPhotoSeries();
+    const data = data_.props.images;
+    return data.map((image: any) => ({
+      seriesId: image.slug.toString(),
+      revalidate: 86400,
+    }));
+  } catch (error) {
+    console.warn('Failed to generate static params for photo-series, skipping:', error);
+    return [];
+  }
 }
 
 // return users .map(user => ({
@@ -43,20 +78,55 @@ export async function generateStaticParams() {
 
 async function Page({ params }: Props) {
   const { seriesId } = params;
-  const data_ = await getPhotoSeries();
 
-  //handle pretty urls, the stulg is fetched and the data is filtered from the same query
-  const data = data_.props.images.filter(
-    (image: any) => image.slug === seriesId
-  )[0];
-  // console.log(data);
+  // Check if Contentful credentials are configured
+  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+    return (
+      <AnimationWrapper>
+        <Header title="Photo Series" subtitle="Contentful configuration required" />
+        <section className="py-24 md:mx-1 justify-self-center text-center">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Configuration Required</h2>
+            <p className="text-muted-foreground">
+              Please configure your Contentful credentials in the .env file to view photo series.
+            </p>
+            <div className="mt-6 text-sm text-muted-foreground">
+              <p>Required environment variables:</p>
+              <ul className="mt-2 space-y-1">
+                <li>NEXT_PUBLIC_CONTENTFUL_SPACE_ID</li>
+                <li>NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </AnimationWrapper>
+    );
+  }
 
-  // let x = await JSON.stringify(data.images);
-  return (
-    <AnimationWrapper>
-      <Header title={data.seriesTitle} subtitle={data.description} />
-      <section className="py-24 md:mx-1 justify-self-center ">
-        {data.images.map((image: any, index: number) => (
+  try {
+    const data_ = await getPhotoSeries();
+    //handle pretty urls, the slug is fetched and the data is filtered from the same query
+    const data = data_.props.images.filter(
+      (image: any) => image.slug === seriesId
+    )[0];
+
+    if (!data) {
+      return (
+        <AnimationWrapper>
+          <Header title="Photo Series" subtitle="Series not found" />
+          <section className="py-24 md:mx-1 justify-self-center text-center">
+            <p className="text-muted-foreground">The requested photo series was not found.</p>
+          </section>
+        </AnimationWrapper>
+      );
+    }
+
+    return (
+      <AnimationWrapper>
+        <Header title={data.seriesTitle} subtitle={data.description} />
+        <section className="py-24 md:mx-1 justify-self-center ">
+          {data.images.map((image: any, index: number) => (
           <div
             className={`flex flex-col items-center justify-between md:px-24 pt-24 py-1 text-2xl tracking-tight transition-colors text-muted-foreground ${
               // index % 2 ? "md:flex-row-reverse" : ""
@@ -96,6 +166,21 @@ async function Page({ params }: Props) {
       </div> */}
     </AnimationWrapper>
   );
+  } catch (error) {
+    return (
+      <AnimationWrapper>
+        <Header title="Photo Series" subtitle="Error loading content" />
+        <section className="py-24 md:mx-1 justify-self-center text-center">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Unable to Load Content</h2>
+            <p className="text-muted-foreground">
+              There was an error loading the photo series. Please check your Contentful configuration.
+            </p>
+          </div>
+        </section>
+      </AnimationWrapper>
+    );
+  }
 }
 
 export default Page;

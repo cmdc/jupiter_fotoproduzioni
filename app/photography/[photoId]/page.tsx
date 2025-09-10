@@ -19,37 +19,103 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { photoId } = params;
-  var data = await getDataPhotographs();
-  var alt = data.props.images
-    .map(function (e: { alt: any }) {
-      return e.alt;
-    })
-    .indexOf(photoId);
+  
+  // Skip metadata generation if Contentful credentials are not configured
+  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+    return {
+      title: `Photograph | ${photoId}`,
+    };
+  }
 
-  return {
-    title: `Photograph | ${alt}`,
-  };
+  try {
+    var data = await getDataPhotographs();
+    var alt = data.props.images
+      .map(function (e: { alt: any }) {
+        return e.alt;
+      })
+      .indexOf(photoId);
+
+    return {
+      title: `Photograph | ${alt}`,
+    };
+  } catch (error) {
+    return {
+      title: `Photograph | ${photoId}`,
+    };
+  }
 }
 
 export async function generateStaticParams() {
-  const dataAll = await getDataPhotographs();
-  const data = dataAll.props.images;
-  return data.map((image: any) => ({
-    photoId: image.idc.toString(),
-    revalidate: 86400,
-  }));
+  // Skip static generation if Contentful credentials are not configured
+  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+    return [];
+  }
+
+  try {
+    const dataAll = await getDataPhotographs();
+    const data = dataAll.props.images;
+    return data.map((image: any) => ({
+      photoId: image.idc.toString(),
+      revalidate: 86400,
+    }));
+  } catch (error) {
+    console.warn('Failed to generate static params for photography, skipping:', error);
+    return [];
+  }
 }
 
 async function Page({ params }: Props) {
-  var data = await getDataPhotographs();
   var idc = params.photoId;
-  return (
-    <AnimationWrapper>
-      <div>
-        <ModalSwiper images={data.props.images} idc={idc} show={false} />
-      </div>
-    </AnimationWrapper>
-  );
+
+  // Check if Contentful credentials are configured
+  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+    return (
+      <AnimationWrapper>
+        <div className="py-24 text-center">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Configuration Required</h2>
+            <p className="text-muted-foreground">
+              Please configure your Contentful credentials in the .env file to view photographs.
+            </p>
+            <div className="mt-6 text-sm text-muted-foreground">
+              <p>Required environment variables:</p>
+              <ul className="mt-2 space-y-1">
+                <li>NEXT_PUBLIC_CONTENTFUL_SPACE_ID</li>
+                <li>NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </AnimationWrapper>
+    );
+  }
+
+  try {
+    var data = await getDataPhotographs();
+    return (
+      <AnimationWrapper>
+        <div>
+          <ModalSwiper images={data.props.images} idc={idc} show={false} />
+        </div>
+      </AnimationWrapper>
+    );
+  } catch (error) {
+    return (
+      <AnimationWrapper>
+        <div className="py-24 text-center">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Unable to Load Content</h2>
+            <p className="text-muted-foreground">
+              There was an error loading the photograph. Please check your Contentful configuration.
+            </p>
+          </div>
+        </div>
+      </AnimationWrapper>
+    );
+  }
 }
 export default Page;
 

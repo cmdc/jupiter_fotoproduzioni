@@ -15,17 +15,46 @@ export const metadata: Metadata = {
 };
 
 const Page = async (props: Props) => {
-  const data = await getPhotoSeries();
-  return (
-    <AnimationWrapper>
-      <Header
-        title="Photo Series"
-        subtitle="Photographs in meaningful grouping."
-        subtitle2="A message conveyed, a feeling captured through a series of images."
-      />
+  // Check if Contentful credentials are configured
+  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+    return (
+      <AnimationWrapper>
+        <Header
+          title="Photo Series"
+          subtitle="Contentful configuration required"
+        />
+        <section className="py-24 md:mx-1 justify-self-center text-center">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Configuration Required</h2>
+            <p className="text-muted-foreground">
+              Please configure your Contentful credentials in the .env file to view photo series.
+            </p>
+            <div className="mt-6 text-sm text-muted-foreground">
+              <p>Required environment variables:</p>
+              <ul className="mt-2 space-y-1">
+                <li>NEXT_PUBLIC_CONTENTFUL_SPACE_ID</li>
+                <li>NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </AnimationWrapper>
+    );
+  }
 
-      <div className="flex flex-col items-center justify-between md:px-24 pt-24">
-        {data.props.images.map((image: ImageSeriesProps, index: number) => (
+  try {
+    const data = await getPhotoSeries();
+    return (
+      <AnimationWrapper>
+        <Header
+          title="Photo Series"
+          subtitle="Photographs in meaningful grouping."
+          subtitle2="A message conveyed, a feeling captured through a series of images."
+        />
+
+        <div className="flex flex-col items-center justify-between md:px-24 pt-24">
+          {data.props.images.map((image: ImageSeriesProps, index: number) => (
           // for each image, show the image alternatingly on left and right with the setiesTitle and description on the other side
           <>
             <Separator className={index === 0 ? "hidden" : ""} />
@@ -83,6 +112,24 @@ const Page = async (props: Props) => {
       </div>
     </AnimationWrapper>
   );
+  } catch (error) {
+    return (
+      <AnimationWrapper>
+        <Header
+          title="Photo Series"
+          subtitle="Error loading content"
+        />
+        <section className="py-24 md:mx-1 justify-self-center text-center">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Unable to Load Content</h2>
+            <p className="text-muted-foreground">
+              There was an error loading the photo series. Please check your Contentful configuration.
+            </p>
+          </div>
+        </section>
+      </AnimationWrapper>
+    );
+  }
 };
 
 export default Page;

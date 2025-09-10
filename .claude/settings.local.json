@@ -13,7 +13,8 @@
       "Bash(yarn)",
       "Bash(npm run lint)",
       "Bash(npm run dev:*)",
-      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build)"
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build)",
+      "Bash(SKIP_ENV_VALIDATION=true npm run build)"
     ],
     "deny": [],
     "ask": []
