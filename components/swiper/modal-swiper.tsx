@@ -160,6 +160,8 @@ function ModalSwiper({ images, idc, show }: Props) {
                     <button
                       className="flex w-full h-full items-center justify-center rounded-lg"
                       onClick={() => console.log("clicked")}
+                      aria-label={`View thumbnail: ${image.alt}`}
+                      title={`View thumbnail: ${image.alt}`}
                     >
                       <Image
                         src={image.src}

@@ -96,8 +96,12 @@ const Page = async (props: Props) => {
                     (max-width: 1280px) 50vw,
                     (max-width: 1536px) 33vw,
                     25vw"
-                    placeholder="blur"
-                    blurDataURL={image.blurDataURL}
+                    {...(image.blurDataURL
+                      ? {
+                          placeholder: "blur" as const,
+                          blurDataURL: image.blurDataURL,
+                        }
+                      : {})}
                   />
                   {/* {console.log(image.blurDataURL)} */}
                   {/* <div className="absolute md:hidden top-0 mb-20 right-0 bottom-0 left-0 bg-gradient-to-b to-transparent from-zinc-900 opacity-80 md:opacity-0 group-hover:opacity-80 "></div> */}

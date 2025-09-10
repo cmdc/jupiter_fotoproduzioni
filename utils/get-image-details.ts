@@ -1,10 +1,8 @@
 // unused file
 import getBase64ImageUrl from "../lib/generate-blur-placeholder";
-import { ImageProps } from "./types";
 
-
-const GetImageDetils = async (reducedResults : any) => {
-  const blurImagePromises = reducedResults.map((image : any) => {
+const GetImageDetils = async (reducedResults: any) => {
+  const blurImagePromises = reducedResults.map((image: any) => {
     return getBase64ImageUrl(image.src);
   });
   const imagesWithBlurDataUrls = await Promise.all(blurImagePromises);
@@ -17,7 +15,6 @@ const GetImageDetils = async (reducedResults : any) => {
       images: reducedResults,
     },
   };
+};
 
-}
-
-export default GetImageDetils
+export default GetImageDetils;

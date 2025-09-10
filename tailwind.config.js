@@ -2,11 +2,11 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -20,8 +20,8 @@ module.exports = {
         blob: "blob 7s infinite",
       },
       gridTemplateColumns: {
-        'gallery': 'repeat(auto-fit, minmax(500px, 1fr))'
-    },
+        gallery: "repeat(auto-fit, minmax(500px, 1fr))",
+      },
       keyframes: {
         blob: {
           "0%": {
@@ -95,4 +95,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};

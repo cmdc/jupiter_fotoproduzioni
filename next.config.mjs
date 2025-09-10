@@ -5,23 +5,22 @@ import withPlaiceholder from "@plaiceholder/next";
  */
 
 const nextConfig = {
-  output: 'standalone',
+  output: "standalone",
 
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'ik.imagekit.io',
+        protocol: "https",
+        hostname: "ik.imagekit.io",
       },
       {
-        protocol: 'https',
-        hostname: 'images.ctfassets.net', // Legacy support
+        protocol: "https",
+        hostname: "images.ctfassets.net", // Legacy support
       },
     ],
-    loader: 'custom',
-    loaderFile: './lib/imagekit-loader.tsx',
+    loader: "custom",
+    loaderFile: "./lib/imagekit-loader.tsx",
   },
-}
+};
 
 export default withPlaiceholder(nextConfig);
-

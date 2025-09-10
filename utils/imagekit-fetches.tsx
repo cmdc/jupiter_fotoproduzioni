@@ -38,28 +38,32 @@ async function getImageKitFiles() {
 
 // Process individual images for photography gallery
 async function processImages(files: any[]) {
-  const photographs = files.filter(file => 
-    file.type === 'file' && 
-    file.mimeType?.startsWith('image/') &&
-    !file.tags?.includes('series') // Individual photos, not part of series
+  const photographs = files.filter(
+    (file) =>
+      file.type === "file" &&
+      file.mimeType?.startsWith("image/") &&
+      !file.tags?.includes("series") // Individual photos, not part of series
   );
+  console.log(`Processing ${photographs.length} photographs`);
 
   let reducedResults: ImageProps[] = [];
-  
+
   for (let i = 0; i < photographs.length; i++) {
     const file = photographs[i];
     const imageUrl = imagekitClient.url({
       path: file.filePath,
-      transformation: [{
-        width: 800,
-        quality: 80,
-        format: 'webp'
-      }]
+      transformation: [
+        {
+          width: 800,
+          quality: 80,
+          format: "webp",
+        },
+      ],
     });
-    
+
     try {
       const blurDataURL = await getBase64ImageUrl(imageUrl);
-      
+
       reducedResults.push({
         id: i,
         idc: file.fileId,
@@ -67,7 +71,9 @@ async function processImages(files: any[]) {
         src: imageUrl,
         width: file.width || 800,
         alt: String(file.customMetadata?.alt || file.name || `Photo ${i + 1}`),
-        date: file.customMetadata?.date || new Date(file.createdAt).toLocaleDateString(),
+        date:
+          file.customMetadata?.date ||
+          new Date(file.createdAt).toLocaleDateString(),
         blurDataURL,
       });
     } catch (error) {
@@ -79,7 +85,9 @@ async function processImages(files: any[]) {
         src: imageUrl,
         width: file.width || 800,
         alt: String(file.customMetadata?.alt || file.name || `Photo ${i + 1}`),
-        date: file.customMetadata?.date || new Date(file.createdAt).toLocaleDateString(),
+        date:
+          file.customMetadata?.date ||
+          new Date(file.createdAt).toLocaleDateString(),
         blurDataURL: undefined,
       });
     }
@@ -95,13 +103,16 @@ async function processImages(files: any[]) {
 // Get individual photographs for gallery
 export async function getDataPhotographs() {
   // Check if ImageKit credentials are configured
-  if (!process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || 
-      process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === 'your-imagekit-public-key') {
+  if (
+    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
+    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
+  ) {
     throw new Error("ImageKit credentials not configured");
   }
 
   try {
     const files = await getImageKitFiles();
+    console.log(`Fetched ${files.length} files from ImageKit`);
     return await processImages(files);
   } catch (error) {
     console.error("Error in getDataPhotographs:", error);
@@ -111,8 +122,10 @@ export async function getDataPhotographs() {
 
 // Get a single photo by ID
 export async function getAPhoto(id: string) {
-  if (!process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || 
-      process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === 'your-imagekit-public-key') {
+  if (
+    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
+    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
+  ) {
     throw new Error("ImageKit credentials not configured");
   }
 
@@ -120,13 +133,15 @@ export async function getAPhoto(id: string) {
     const fileDetails = await imagekit.getFileDetails(id);
     const imageUrl = imagekitClient.url({
       path: fileDetails.filePath,
-      transformation: [{
-        width: 800,
-        quality: 80,
-        format: 'webp'
-      }]
+      transformation: [
+        {
+          width: 800,
+          quality: 80,
+          format: "webp",
+        },
+      ],
     });
-    
+
     const blurDataURL = await getBase64ImageUrl(imageUrl);
 
     return {
@@ -136,7 +151,9 @@ export async function getAPhoto(id: string) {
       src: imageUrl,
       width: fileDetails.width || 800,
       blurDataURL,
-      alt: String(fileDetails.customMetadata?.alt || fileDetails.name || "Photo"),
+      alt: String(
+        fileDetails.customMetadata?.alt || fileDetails.name || "Photo"
+      ),
     };
   } catch (error) {
     console.error("Error in getAPhoto:", error);
@@ -146,8 +163,10 @@ export async function getAPhoto(id: string) {
 
 // Get photo series (folders with photos)
 export async function getPhotoSeries() {
-  if (!process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || 
-      process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === 'your-imagekit-public-key') {
+  if (
+    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
+    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
+  ) {
     throw new Error("ImageKit credentials not configured");
   }
 
@@ -157,13 +176,13 @@ export async function getPhotoSeries() {
     // Get all files and group them by tags
     const allFiles = await getImageKitFiles();
     const seriesMap = new Map<string, any[]>();
-    
+
     // Group files by series tag
     allFiles.forEach((file: any) => {
       if (file.tags && file.tags.length > 0) {
         file.tags.forEach((tag: string) => {
-          if (tag.startsWith('series:')) {
-            const seriesName = tag.replace('series:', '');
+          if (tag.startsWith("series:")) {
+            const seriesName = tag.replace("series:", "");
             if (!seriesMap.has(seriesName)) {
               seriesMap.set(seriesName, []);
             }
@@ -175,28 +194,44 @@ export async function getPhotoSeries() {
 
     const seriesResults: ImageSeriesProps[] = [];
     let seriesIndex = 0;
-    
+
     for (const [seriesName, files] of Array.from(seriesMap.entries())) {
       if (files.length === 0) continue;
       // Process images in series
       const seriesImages = await processSeriesImages(files);
-      
+
       // Use first image as cover
       const coverImage = files[0];
       const coverImageUrl = imagekitClient.url({
         path: coverImage.filePath,
-        transformation: [{
-          width: 600,
-          height: 400,
-          crop: 'maintain_ratio',
-          quality: 80,
-          format: 'webp'
-        }]
+        transformation: [
+          {
+            width: 600,
+            height: 400,
+            crop: "maintain_ratio",
+            quality: 80,
+            format: "webp",
+          },
+        ],
       });
-      
+
       const seriesTitle = coverImage.customMetadata?.seriesTitle || seriesName;
-      const description = coverImage.customMetadata?.seriesDescription || `Photo series: ${seriesTitle}`;
-      
+      const description =
+        coverImage.customMetadata?.seriesDescription ||
+        `Photo series: ${seriesTitle}`;
+
+      // Generate blur data URL for cover image
+      let coverBlurDataURL;
+      try {
+        coverBlurDataURL = await getBase64ImageUrl(coverImageUrl);
+      } catch (error) {
+        console.warn(
+          `Failed to generate blur for series cover ${seriesName}:`,
+          error
+        );
+        coverBlurDataURL = undefined;
+      }
+
       seriesResults.push({
         id: seriesIndex,
         idc: `series-${seriesIndex}`,
@@ -205,11 +240,13 @@ export async function getPhotoSeries() {
         seriesTitle,
         description,
         alt: seriesTitle,
-        date: coverImage.customMetadata?.date || new Date(coverImage.createdAt).toLocaleDateString(),
-        blurDataURL: undefined, // Will be generated if needed
+        date:
+          coverImage.customMetadata?.date ||
+          new Date(coverImage.createdAt).toLocaleDateString(),
+        blurDataURL: coverBlurDataURL,
         images: seriesImages.props.images,
       });
-      
+
       seriesIndex++;
     }
 
@@ -227,41 +264,54 @@ export async function getPhotoSeries() {
 // Process images within a series
 async function processSeriesImages(files: any[]) {
   let reducedResults: ImageProps[] = [];
-  
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const imageUrl = imagekitClient.url({
       path: file.filePath,
-      transformation: [{
-        width: 1200,
-        quality: 90,
-        format: 'webp'
-      }]
+      transformation: [
+        {
+          width: 1200,
+          quality: 90,
+          format: "webp",
+        },
+      ],
     });
-    
+
     try {
       const blurDataURL = await getBase64ImageUrl(imageUrl);
-      
+
       reducedResults.push({
         id: i,
         idc: file.fileId,
         height: file.height || 800,
         src: imageUrl,
         width: file.width || 1200,
-        alt: String(file.customMetadata?.alt || file.name || `Series photo ${i + 1}`),
-        date: file.customMetadata?.date || new Date(file.createdAt).toLocaleDateString(),
+        alt: String(
+          file.customMetadata?.alt || file.name || `Series photo ${i + 1}`
+        ),
+        date:
+          file.customMetadata?.date ||
+          new Date(file.createdAt).toLocaleDateString(),
         blurDataURL,
       });
     } catch (error) {
-      console.warn(`Failed to generate blur for series image ${file.name}:`, error);
+      console.warn(
+        `Failed to generate blur for series image ${file.name}:`,
+        error
+      );
       reducedResults.push({
         id: i,
         idc: file.fileId,
         height: file.height || 800,
         src: imageUrl,
         width: file.width || 1200,
-        alt: String(file.customMetadata?.alt || file.name || `Series photo ${i + 1}`),
-        date: file.customMetadata?.date || new Date(file.createdAt).toLocaleDateString(),
+        alt: String(
+          file.customMetadata?.alt || file.name || `Series photo ${i + 1}`
+        ),
+        date:
+          file.customMetadata?.date ||
+          new Date(file.createdAt).toLocaleDateString(),
         blurDataURL: undefined,
       });
     }
@@ -277,12 +327,14 @@ async function processSeriesImages(files: any[]) {
 // Legacy compatibility - get a series by slug
 export async function getASeries(slug: string) {
   const allSeries = await getPhotoSeries();
-  const series = allSeries.props.images.find((s: ImageSeriesProps) => s.slug === slug);
-  
+  const series = allSeries.props.images.find(
+    (s: ImageSeriesProps) => s.slug === slug
+  );
+
   if (!series) {
     throw new Error(`Series not found: ${slug}`);
   }
-  
+
   return {
     reducedResults: series,
     images: { props: { images: series.images || [] } },
