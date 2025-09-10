@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { Header } from "@/components/ui/header-on-page";
 import Link from "next/link";
-import { getAPhoto } from "@/utils/contentful-fetches";
+import { getAPhoto } from "@/utils/imagekit-fetches";
 import AnimationWrapper from "@/components/ui/animation-wrapper";
 
 import type { Metadata } from "next";
@@ -16,10 +16,10 @@ type Props = {};
 async function Page({}: Props) {
   let data;
 
-  // Check if Contentful credentials are configured
+  // Check if ImageKit credentials are configured
   if (
-    !process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ||
-    process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === "your-contentful-space-id"
+    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
+    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
   ) {
     data = null;
   } else {

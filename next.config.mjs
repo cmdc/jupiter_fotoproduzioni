@@ -8,10 +8,18 @@ const nextConfig = {
   output: 'standalone',
 
   images: {
-    domains: ['images.ctfassets.net'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.ctfassets.net', // Legacy support
+      },
+    ],
     loader: 'custom',
-    loaderFile: './lib/contentful-loader.tsx',
-    path: 'https://',
+    loaderFile: './lib/imagekit-loader.tsx',
   },
 }
 
