@@ -132,7 +132,10 @@ export function CookieConsentBanner() {
 
                   {/* Analytics Cookies */}
                   <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                    <label htmlFor="analytics-consent" className="space-y-1 flex-1 cursor-pointer">
+                    <label
+                      htmlFor="analytics-consent"
+                      className="space-y-1 flex-1 cursor-pointer"
+                    >
                       <h4 className="font-medium text-sm select-none">
                         Analytics Cookies
                       </h4>
@@ -155,7 +158,7 @@ export function CookieConsentBanner() {
                   </div>
 
                   {/* Marketing Cookies */}
-                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  {/* <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                     <label htmlFor="marketing-consent" className="space-y-1 flex-1 cursor-pointer">
                       <h4 className="font-medium text-sm select-none">
                         Marketing Cookies
@@ -176,11 +179,14 @@ export function CookieConsentBanner() {
                         className="w-4 h-4 text-primary bg-background border-2 rounded focus:ring-primary"
                       />
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Preferences Cookies */}
-                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                    <label htmlFor="preferences-consent" className="space-y-1 flex-1 cursor-pointer">
+                  {/* <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <label
+                      htmlFor="preferences-consent"
+                      className="space-y-1 flex-1 cursor-pointer"
+                    >
                       <h4 className="font-medium text-sm select-none">
                         Preference Cookies
                       </h4>
@@ -200,7 +206,7 @@ export function CookieConsentBanner() {
                         className="w-4 h-4 text-primary bg-background border-2 rounded focus:ring-primary"
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </motion.div>
               )}
             </AnimatePresence>
