@@ -15,16 +15,18 @@ type Props = {};
 
 async function Page({}: Props) {
   let data;
-  
+
   // Check if Contentful credentials are configured
-  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
-      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+  if (
+    !process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ||
+    process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === "your-contentful-space-id"
+  ) {
     data = null;
   } else {
     try {
       data = await getAPhoto("2Lk8gJFapmsaug9WrFV7jW");
     } catch (error) {
-      console.warn('Failed to load photo for about page:', error);
+      console.warn("Failed to load photo for about page:", error);
       data = null;
     }
   }
@@ -32,7 +34,7 @@ async function Page({}: Props) {
   return (
     <AnimationWrapper>
       <Header
-        title={"👋 Hi, I am Ashwin"}
+        title={"👋 Hi, I am Ciuot"}
         subtitle={"I tinker with code and take photos."}
         subtitle2={"Otherwise busy building products for learners."}
         image={data || undefined}
