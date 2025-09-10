@@ -20,7 +20,6 @@ export default function MenuElements({
   const navigation = [
     { name: "Photo-Series", href: "/photo-series" },
     { name: "Photography", href: "/photography" },
-    { name: "Projects", href: "/projects" },
     { name: "About", href: "/about" },
   ];
   return (
