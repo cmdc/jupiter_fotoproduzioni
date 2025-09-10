@@ -27,21 +27,21 @@ export default async function Page({}: Props) {
             title="Photography"
             subtitle="ImageKit configuration required"
           />
-          <section className="py-24 text-center">
+          <section className="py-24 text-center select-none">
             <div className="max-w-2xl mx-auto">
-              <h2 className="text-2xl font-bold mb-4">
+              <h2 className="text-2xl font-bold mb-4 select-none">
                 Configuration Required
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground select-none">
                 Please configure your ImageKit credentials in the .env file to
                 view photographs.
               </p>
-              <div className="mt-6 text-sm text-muted-foreground">
-                <p>Required environment variables:</p>
-                <ul className="mt-2 space-y-1">
-                  <li>NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY</li>
-                  <li>NEXT_IMAGEKIT_PRIVATE_KEY</li>
-                  <li>NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT</li>
+              <div className="mt-6 text-sm text-muted-foreground select-none">
+                <p className="select-none">Required environment variables:</p>
+                <ul className="mt-2 space-y-1 select-none">
+                  <li className="select-none">NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY</li>
+                  <li className="select-none">NEXT_IMAGEKIT_PRIVATE_KEY</li>
+                  <li className="select-none">NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT</li>
                 </ul>
               </div>
             </div>
@@ -78,12 +78,12 @@ export default async function Page({}: Props) {
       <AnimationWrapper>
         <div>
           <Header title="Photography" subtitle="Error loading content" />
-          <section className="py-24 text-center">
+          <section className="py-24 text-center select-none">
             <div className="max-w-2xl mx-auto">
-              <h2 className="text-2xl font-bold mb-4">
+              <h2 className="text-2xl font-bold mb-4 select-none">
                 Unable to Load Content
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground select-none">
                 There was an error loading the photographs. Please check your
                 ImageKit configuration.
               </p>

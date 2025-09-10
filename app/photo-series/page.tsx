@@ -26,19 +26,19 @@ const Page = async (props: Props) => {
           title="Photo Series"
           subtitle="ImageKit configuration required"
         />
-        <section className="py-24 md:mx-1 justify-self-center text-center">
+        <section className="py-24 md:mx-1 justify-self-center text-center select-none">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Configuration Required</h2>
-            <p className="text-muted-foreground">
+            <h2 className="text-2xl font-bold mb-4 select-none">Configuration Required</h2>
+            <p className="text-muted-foreground select-none">
               Please configure your ImageKit credentials in the .env file to
               view photo series.
             </p>
-            <div className="mt-6 text-sm text-muted-foreground">
-              <p>Required environment variables:</p>
-              <ul className="mt-2 space-y-1">
-                <li>NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY</li>
-                <li>NEXT_IMAGEKIT_PRIVATE_KEY</li>
-                <li>NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT</li>
+            <div className="mt-6 text-sm text-muted-foreground select-none">
+              <p className="select-none">Required environment variables:</p>
+              <ul className="mt-2 space-y-1 select-none">
+                <li className="select-none">NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY</li>
+                <li className="select-none">NEXT_IMAGEKIT_PRIVATE_KEY</li>
+                <li className="select-none">NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT</li>
               </ul>
             </div>
           </div>
@@ -71,11 +71,11 @@ const Page = async (props: Props) => {
                   }`}
                   // {`https://twitter.com/intent/tweet?text=Check%20out%20this%20pic%20from%20Next.js%20Conf!%0A%0Ahttps://nextjsconf-pics.vercel.app/p/${index}`}
                 >
-                  <div className="md:hidden text-center mx-2">
-                    <p className=" group-hover:opacity-100 scroll-m-20 md:border-b py-1 text-xl md:text-3xl font-semibold tracking-tight transition-colors">
+                  <div className="md:hidden text-center mx-2 select-none">
+                    <p className=" group-hover:opacity-100 scroll-m-20 md:border-b py-1 text-xl md:text-3xl font-semibold tracking-tight transition-colors select-none">
                       {image.seriesTitle}
                     </p>
-                    <p className="text-sm md:text-xl md:text-muted-foreground group-hover:opacity-100 line-clamp-2">
+                    <p className="text-sm md:text-xl md:text-muted-foreground group-hover:opacity-100 line-clamp-2 select-none">
                       {image.description} <br /> {image.date}
                     </p>
                   </div>
@@ -105,11 +105,11 @@ const Page = async (props: Props) => {
                   />
                   {/* {console.log(image.blurDataURL)} */}
                   {/* <div className="absolute md:hidden top-0 mb-20 right-0 bottom-0 left-0 bg-gradient-to-b to-transparent from-zinc-900 opacity-80 md:opacity-0 group-hover:opacity-80 "></div> */}
-                  <div className="hidden md:block md:p-12 lg:m-24 max-w-2xl">
-                    <p className="my-3 opacity-50 group-hover:opacity-100 scroll-m-20 md:border-b pb-2 text-xl md:text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+                  <div className="hidden md:block md:p-12 lg:m-24 max-w-2xl select-none">
+                    <p className="my-3 opacity-50 group-hover:opacity-100 scroll-m-20 md:border-b pb-2 text-xl md:text-3xl font-semibold tracking-tight transition-colors first:mt-0 select-none">
                       {image.seriesTitle}
                     </p>
-                    <p className="text-sm opacity-50 md:text-xl text-white md:text-muted-foreground group-hover:opacity-100 line-clamp-3">
+                    <p className="text-sm opacity-50 md:text-xl text-white md:text-muted-foreground group-hover:opacity-100 line-clamp-3 select-none">
                       {image.description} <br /> {image.date}
                     </p>
                   </div>
@@ -124,10 +124,10 @@ const Page = async (props: Props) => {
     return (
       <AnimationWrapper>
         <Header title="Photo Series" subtitle="Error loading content" />
-        <section className="py-24 md:mx-1 justify-self-center text-center">
+        <section className="py-24 md:mx-1 justify-self-center text-center select-none">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Unable to Load Content</h2>
-            <p className="text-muted-foreground">
+            <h2 className="text-2xl font-bold mb-4 select-none">Unable to Load Content</h2>
+            <p className="text-muted-foreground select-none">
               There was an error loading the photo series. Please check your
               ImageKit configuration.
             </p>

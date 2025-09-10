@@ -25,7 +25,7 @@ export async function Header({
       >
         <div className="relative isolate px-6 pt-24 lg:px-8">
           {image && (
-            <p className="text-xl py-2 text-center text-muted-foreground leading-10">
+            <p className="text-xl py-2 text-center text-muted-foreground leading-10 select-none">
               <Image
                 className="w-44 h-44 p-1 rounded-full border-2 border-gray-300 dark:border-gray-500 mx-auto object-cover object-center grayscale hover:grayscale-0 hover:drop-shadow-lg"
                 src={image?.src}
@@ -38,12 +38,12 @@ export async function Header({
               />
             </p>
           )}
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight py-4 border-b mb-5 sm:text-6xl">
+          <div className="text-center select-none">
+            <h1 className="text-4xl font-bold tracking-tight py-4 border-b mb-5 sm:text-6xl select-none">
               {/* <AnimatedText text={title} once /> */}
               {title}
             </h1>
-            <p className="text-xl py-2 text-muted-foreground leading-10">
+            <p className="text-xl py-2 text-muted-foreground leading-10 select-none">
               {subtitle}
               {/* <AnimatedText
                 once
@@ -64,7 +64,7 @@ export async function Header({
               /> */}
             </p>
             {subtitle2 && (
-              <p className="text-xl py-2 text-muted-foreground leading-10">
+              <p className="text-xl py-2 text-muted-foreground leading-10 select-none">
                 {subtitle2}
                 {/* <AnimatedText
                   once

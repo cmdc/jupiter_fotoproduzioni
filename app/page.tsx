@@ -16,28 +16,28 @@ export default function Home() {
   return (
     <AnimationWrapper>
       <div className="flex relative isolate items-center justify-center h-[calc(100vh-160px)] align-middle px-5">
-        <div className="text-center">
-          <h1 className="text-5xl font-bold tracking-tight  sm:text-6xl">
+        <div className="text-center select-none">
+          <h1 className="text-5xl font-bold tracking-tight  sm:text-6xl select-none">
             <AnimatedText
               text="Umwelt"
               once
-              className="text-5xl font-bold tracking-tight  sm:text-6xl"
+              className="text-5xl font-bold tracking-tight  sm:text-6xl select-none"
             />
           </h1>
-          <p className="mt-6 text-sm  md:text-md leading-6 md:leading-8 text-muted-foreground">
+          <p className="mt-6 text-sm  md:text-md leading-6 md:leading-8 text-muted-foreground select-none">
             \/ˈʊmvɛlt/ noun (in ethology)
           </p>
           <blockquote>
-            <p className="mt-6 text-md md:text-xl font-bold md:font-normal  underline-offset-4	 leading-8">
+            <p className="mt-6 text-md md:text-xl font-bold md:font-normal  underline-offset-4	 leading-8 select-none">
               the world as it is experienced by a particular organism.
             </p>
           </blockquote>
-          <p className="my-6 mb-12 text-sm md:leading-8 text-muted-foreground">
+          <p className="my-6 mb-12 text-sm md:leading-8 text-muted-foreground select-none">
             &quot;the worlds they perceive, their Umwelten, are all
             different&quot;
           </p>
           <Separator />
-          <div className="pt-12 text-xs md:text-normal mb-5 lg:hidden opacity-60 ">
+          <div className="pt-12 text-xs md:text-normal mb-5 lg:hidden opacity-60 select-none">
             {/* <p className="m-6 ">Dive in:</p> */}
             <MenuElements className="md:p-5" />
           </div>

@@ -18,7 +18,7 @@ export default function Menu() {
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="m-2.5 p-2">
-            <p className="scroll-m-20 text-md font-extrabold tracking-tight lg:text-lg">
+            <p className="scroll-m-20 text-md font-extrabold tracking-tight lg:text-lg select-none">
               Thy Umwelt
             </p>
             <span className="sr-only">Thy Umwelt</span>
@@ -58,7 +58,7 @@ export default function Menu() {
               className="-m-1.5 p-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <p className="scroll-m-20 text-md font-extrabold tracking-tight lg:text-lg">
+              <p className="scroll-m-20 text-md font-extrabold tracking-tight lg:text-lg select-none">
                 Thy Umwelt
               </p>
               <span className="sr-only">Thy Umwelt</span>

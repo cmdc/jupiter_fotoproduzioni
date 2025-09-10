@@ -107,7 +107,7 @@ async function Page({}: Props) {
           </svg>
         </Link>
       </div>
-      <p className="text-muted-foreground text-center p-10">
+      <p className="text-muted-foreground text-center p-10 select-none">
         This page is 🖐️ made with Nextjs 13, Tailwind, Shadcn
       </p>
     </AnimationWrapper>
