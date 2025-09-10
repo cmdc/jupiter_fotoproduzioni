@@ -14,7 +14,20 @@ export const metadata: Metadata = {
 type Props = {};
 
 async function Page({}: Props) {
-  const data = await getAPhoto("2Lk8gJFapmsaug9WrFV7jW");
+  let data;
+  
+  // Check if Contentful credentials are configured
+  if (!process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || 
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID === 'your-contentful-space-id') {
+    data = null;
+  } else {
+    try {
+      data = await getAPhoto("2Lk8gJFapmsaug9WrFV7jW");
+    } catch (error) {
+      console.warn('Failed to load photo for about page:', error);
+      data = null;
+    }
+  }
   // About page should have my image and a short description of me with some links to my socials
   return (
     <AnimationWrapper>
@@ -22,7 +35,7 @@ async function Page({}: Props) {
         title={"👋 Hi, I am Ashwin"}
         subtitle={"I tinker with code and take photos."}
         subtitle2={"Otherwise busy building products for learners."}
-        image={data}
+        image={data || undefined}
       />
 
       <div className="flex justify-center p-10">
