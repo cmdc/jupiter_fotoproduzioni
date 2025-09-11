@@ -3,15 +3,30 @@
 import { ImageProps } from "@/utils/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 interface BricksMasonryProps {
   images: ImageProps[];
 }
 
 export default function BricksMasonry({ images }: BricksMasonryProps) {
+  const [loadingImages, setLoadingImages] = useState<Set<string>>(
+    new Set(images.map((img) => img.idc))
+  );
+
+  const handleImageLoad = (imageId: string) => {
+    setLoadingImages((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(imageId);
+      return newSet;
+    });
+  };
+
   // Generate varied heights for organic look
   const getRandomHeight = (index: number) => {
-    const heights = [300, 200, 400, 250, 350, 180, 450, 220, 380, 280, 320, 500, 160, 420];
+    const heights = [
+      300, 200, 400, 250, 350, 180, 450, 220, 380, 280, 320, 500, 160, 420,
+    ];
     return heights[index % heights.length];
   };
 
@@ -19,24 +34,24 @@ export default function BricksMasonry({ images }: BricksMasonryProps) {
   const createRows = (imageArray: ImageProps[]) => {
     const rows: ImageProps[][] = [];
     let currentRow: ImageProps[] = [];
-    
+
     imageArray.forEach((image, index) => {
       currentRow.push(image);
-      
+
       // Create new row every 3-4 images (alternate between 3 and 4)
-      const rowSize = (Math.floor(index / 4) % 2 === 0) ? 3 : 4;
-      
+      const rowSize = Math.floor(index / 4) % 2 === 0 ? 3 : 4;
+
       if (currentRow.length >= rowSize) {
         rows.push([...currentRow]);
         currentRow = [];
       }
     });
-    
+
     // Add remaining images as last row
     if (currentRow.length > 0) {
       rows.push(currentRow);
     }
-    
+
     return rows;
   };
 
@@ -45,87 +60,119 @@ export default function BricksMasonry({ images }: BricksMasonryProps) {
   return (
     <div className="w-full">
       {/* Mobile: Simple vertical layout */}
-      <div className="md:hidden space-y-1">
+      <div className="md:hidden flex flex-col gap-4">
         {images.map((image, index) => {
-          const isInstagramPost = image.idc.startsWith('https://www.instagram.com/');
-          const linkProps = isInstagramPost 
+          const isInstagramPost = image.idc.startsWith(
+            "https://www.instagram.com/"
+          );
+          const linkProps = isInstagramPost
             ? { href: image.idc, target: "_blank", rel: "noopener noreferrer" }
             : { href: `/photography/${image.idc}` };
-          
+
+          const isLoading = loadingImages.has(image.idc);
+
           return (
-          <Link key={image.idc} {...linkProps}>
-            <div 
-              className="relative overflow-hidden hover:scale-[1.01] transition-transform duration-300"
-            >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                width={image.width}
-                height={image.height}
-                className="w-full h-auto object-contain"
-                placeholder={image.blurDataURL ? "blur" : "empty"}
-                blurDataURL={image.blurDataURL}
-                priority={index < 4}
-                sizes="100vw"
-                unoptimized={image.src.startsWith('/api/proxy-image') || image.src.includes('ik.imagekit.io')}
-              />
-              
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-                <div className="p-3 text-white">
-                  <h3 className="font-medium text-sm truncate">{image.alt}</h3>
+            <Link key={image.idc} {...linkProps}>
+              <div className="relative overflow-hidden hover:scale-[1.01] transition-transform duration-300">
+                {/* Loading shimmer overlay */}
+                {isLoading && (
+                  <div className="absolute inset-0 image-loading rounded-sm z-10" />
+                )}
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  width={image.width}
+                  height={image.height}
+                  className={`w-full h-auto object-contain transition-opacity duration-500 ${
+                    isLoading ? "opacity-0" : "opacity-100"
+                  }`}
+                  placeholder={image.blurDataURL ? "blur" : "empty"}
+                  blurDataURL={image.blurDataURL}
+                  priority={index < 4}
+                  sizes="100vw"
+                  onLoad={() => handleImageLoad(image.idc)}
+                  unoptimized={
+                    image.src.startsWith("/api/proxy-image") ||
+                    image.src.includes("ik.imagekit.io")
+                  }
+                />
+
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
+                  <div className="p-3 text-white">
+                    <h3 className="font-medium text-sm truncate">
+                      {image.alt}
+                    </h3>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
+            </Link>
           );
         })}
       </div>
 
       {/* Desktop: Row-based layout with organic masonry within each row */}
-      <div className="hidden md:block space-y-2">
+      <div className="hidden md:block space-y-1">
         {imageRows.map((row, rowIndex) => (
-          <div 
-            key={rowIndex}
-            className="flex gap-1"
-          >
+          <div key={rowIndex} className="flex gap-1">
             {row.map((image, imageIndex) => {
-              const globalIndex = imageRows.slice(0, rowIndex).flat().length + imageIndex;
+              const globalIndex =
+                imageRows.slice(0, rowIndex).flat().length + imageIndex;
               const height = getRandomHeight(globalIndex);
               const widthPercentage = 100 / row.length; // Equal width distribution
-              const isInstagramPost = image.idc.startsWith('https://www.instagram.com/');
-              const linkProps = isInstagramPost 
-                ? { href: image.idc, target: "_blank", rel: "noopener noreferrer" }
+              const isInstagramPost = image.idc.startsWith(
+                "https://www.instagram.com/"
+              );
+              const linkProps = isInstagramPost
+                ? {
+                    href: image.idc,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  }
                 : { href: `/photography/${image.idc}` };
-              
+
+              const isLoading = loadingImages.has(image.idc);
+
               return (
-                <Link 
-                  key={image.idc} 
+                <Link
+                  key={image.idc}
                   {...linkProps}
                   style={{ width: `${widthPercentage}%` }}
                 >
-                  <div 
-                    className="relative overflow-hidden hover:scale-[1.005] transition-transform duration-300 group"
-                  >
+                  <div className="relative overflow-hidden hover:scale-[1.005] transition-transform duration-300 group">
+                    {/* Loading shimmer overlay */}
+                    {isLoading && (
+                      <div className="absolute inset-0 image-loading rounded-sm z-10" />
+                    )}
                     <Image
                       src={image.src}
                       alt={image.alt}
                       width={image.width}
                       height={image.height}
-                      className="w-full h-auto object-contain"
+                      className={`w-full h-auto object-contain transition-opacity duration-500 ${
+                        isLoading ? "opacity-0" : "opacity-100"
+                      }`}
                       placeholder={image.blurDataURL ? "blur" : "empty"}
                       blurDataURL={image.blurDataURL}
                       priority={globalIndex < 8}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                      unoptimized={image.src.startsWith('/api/proxy-image') || image.src.includes('ik.imagekit.io')}
+                      onLoad={() => handleImageLoad(image.idc)}
+                      unoptimized={
+                        image.src.startsWith("/api/proxy-image") ||
+                        image.src.includes("ik.imagekit.io")
+                      }
                     />
-                    
+
                     {/* Hover overlay */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                       <div className="p-3 text-white">
-                        <h3 className="font-medium text-sm truncate">{image.alt?.replace(/\.\w+$/, '')}</h3>
+                        <h3 className="font-medium text-sm truncate">
+                          {image.alt?.replace(/\.\w+$/, "")}
+                        </h3>
                         {image.date && (
-                          <p className="text-xs opacity-75 mt-1">{image.date}</p>
+                          <p className="text-xs opacity-75 mt-1">
+                            {image.date}
+                          </p>
                         )}
                       </div>
                     </div>

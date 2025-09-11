@@ -41,7 +41,6 @@ export default function Menu() {
         </div>
 
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          {/* <ModeToggle /> */}
           <ThemeToggle />
         </div>
       </nav>
@@ -52,7 +51,7 @@ export default function Menu() {
         onClose={setMobileMenuOpen}
       >
         <div className="fixed inset-0 z-50" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto px-6 py-6 sm:max-w-sm backdrop-blur-2xl transition-all duration-300 ease-in-out">
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full md:w-96 lg:w-80 xl:w-96 overflow-y-auto px-6 py-6 backdrop-blur-2xl transition-all duration-300 ease-in-out">
           <div className="flex items-center justify-between">
             <Link
               href="/"

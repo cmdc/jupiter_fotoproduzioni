@@ -39,7 +39,7 @@ const Modal: FC<ModalProps> = ({ children }) => {
           static
           open={true}
           onClose={handleOnOpenChange} // initialFocus={overlayRef}
-          className="fixed inset-0 z-10 flex items-center justify-center isolate"
+          className="fixed inset-0 z-[9999] flex items-center justify-center isolate"
         >
           <Dialog.Overlay // ref={overlayRef}
             as={motion.div}
@@ -56,12 +56,14 @@ const Modal: FC<ModalProps> = ({ children }) => {
             {/* Container to center the panel */}
             <div className="flex min-h-full items-center justify-center p-4">
               {children}
-              <div className="absolute z-20 inset-0 mx-auto flex max-w-7xl items-center justify-center">
+              <div className="absolute z-60 inset-0 mx-auto flex max-w-7xl items-center justify-center">
                 <div className="relative aspect-[3/2] h-screen w-full">
                   <div className="absolute top-0 right-0 flex items-center gap-2 p-3 text-white">
                     <button
                       onClick={() => handleOnOpenChange(false)}
                       className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
+                      aria-label="Close modal"
+                      title="Close modal"
                     >
                       <XMarkIcon className="h-5 w-5" />
                     </button>

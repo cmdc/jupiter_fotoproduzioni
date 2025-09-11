@@ -45,6 +45,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
   const [newFileName, setNewFileName] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
+  const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const createAuthHeaders = () => ({
@@ -72,6 +73,8 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
       if (response.ok) {
         const data = await response.json();
         setImages(data);
+        // Initialize loading state for all images
+        setLoadingImages(new Set(data.map((img: ImageFile) => img.id)));
       } else if (response.status === 401) {
         localStorage.removeItem("adminToken");
         window.location.reload();
@@ -79,6 +82,14 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
     } catch (error) {
       console.error("Errore nel caricamento delle immagini:", error);
     }
+  };
+
+  const handleImageLoad = (imageId: string) => {
+    setLoadingImages((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(imageId);
+      return newSet;
+    });
   };
 
   const loadFolders = async (path: string = currentPath) => {
@@ -554,11 +565,20 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
                 }`}
               >
                 <div className="aspect-square relative">
+                  {/* Loading shimmer overlay */}
+                  {loadingImages.has(image.id) && (
+                    <div className="absolute inset-0 image-loading rounded-lg z-10" />
+                  )}
                   <Image
                     src={image.url}
                     alt={image.name}
                     fill
-                    className="object-cover"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                    className={`object-cover transition-opacity duration-500 ${
+                      loadingImages.has(image.id) ? "opacity-0" : "opacity-100"
+                    }`}
+                    unoptimized={image.url.includes('ik.imagekit.io')}
+                    onLoad={() => handleImageLoad(image.id)}
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="absolute top-2 left-2">

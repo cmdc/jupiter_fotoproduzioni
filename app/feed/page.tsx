@@ -31,7 +31,7 @@ export default async function FeedPage() {
             subtitle="Gli ultimi scatti dal profilo @brunol.35ml - Momenti spontanei e dietro le quinte della fotografia."
           />
 
-          <div className="py-24">
+          <div id="photos-section" className="py-24">
             <section className="px-4 md:px-8">
               <div className="mb-8 text-center">
                 <h2 className="text-2xl font-bold mb-2">

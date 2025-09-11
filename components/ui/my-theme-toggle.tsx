@@ -20,7 +20,7 @@ const ThemeToggle = ({ className }: any) => {
         variant="ghost"
         aria-label="Change theme"
         size={"icon"}
-        className={`bg-background ${className} `}
+        className={`${className} `}
         onClick={() => {
           resolvedTheme === "dark" ? setTheme("light") : setTheme("dark");
         }}

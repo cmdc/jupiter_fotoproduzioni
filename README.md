@@ -8,7 +8,7 @@ account cmdc.business@gmail.com
 
 # TODO
 
-Elimina riga sotto l'header
+favicon?
 
 Aspetta testi giusti!
 

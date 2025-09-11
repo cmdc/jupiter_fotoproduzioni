@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { ImageProps } from "@/utils/types";
 import { AnimatedText } from "./animated-text";
@@ -9,7 +10,14 @@ type Props = {
   image?: ImageProps;
 };
 
-export async function Header({
+const scrollToPhotos = () => {
+  const photosSection = document.getElementById('photos-section');
+  if (photosSection) {
+    photosSection.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+export function Header({
   title,
   subtitle,
   subtitle2,
@@ -35,6 +43,8 @@ export async function Header({
                 placeholder="blur"
                 sizes="100px"
                 blurDataURL={image.blurDataURL}
+                priority
+                unoptimized
               />
             </p>
           )}
@@ -89,20 +99,26 @@ export async function Header({
         </div>
       </div>
       {children}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-6 h-6 mt-10 animate-bounce opacity-70 text-center mx-auto"
+      <button 
+        onClick={scrollToPhotos}
+        className="flex justify-center w-full mt-10"
+        aria-label="Scroll to photos"
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3"
-        />
-      </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-6 h-6 animate-bounce opacity-70 text-center mx-auto cursor-pointer hover:opacity-100 transition-opacity"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3"
+          />
+        </svg>
+      </button>
     </>
   );
 }

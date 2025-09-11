@@ -66,7 +66,7 @@ export default async function Page({}: Props) {
             subtitle="Momenti catturati nel tempo, emozioni che diventano arte attraverso l'obiettivo."
           />
 
-          <div className="py-24 space-y-32">
+          <div id="photos-section" className="py-24 space-y-32">
             {/* Tagged sections */}
             {taggedSections.map(([tag, images]) => (
               <section key={tag} className="px-4 md:px-8">
@@ -83,7 +83,7 @@ export default async function Page({}: Props) {
 
             {/* Untagged images - scattered throughout without section header */}
             {untagged.length > 0 && (
-              <section className="px-4 md:px-8 pt-24">
+              <section className="px-4 md:px-8 pt-10">
                 <BricksMasonry images={untagged} />
               </section>
             )}
