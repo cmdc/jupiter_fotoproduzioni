@@ -11,10 +11,17 @@ interface ImageFile {
   size: number;
   tags: string[];
   folder: string;
+  type: 'file' | 'folder';
+  filePath: string;
+  width?: number;
+  height?: number;
+  fileType?: string;
+  uploadedAt: string;
 }
 
 interface Folder {
   name: string;
+  path: string;
   imageCount: number;
 }
 
@@ -25,7 +32,8 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ authToken }: AdminDashboardProps) {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
-  const [selectedFolder, setSelectedFolder] = useState<string>("all");
+  const [selectedFolder, setSelectedFolder] = useState<string>("/");
+  const [currentPath, setCurrentPath] = useState<string>("/");
   const [isUploading, setIsUploading] = useState(false);
   const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
   const [showTagModal, setShowTagModal] = useState(false);
@@ -50,9 +58,10 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
     }
   }, [authToken]);
 
-  const loadImages = async () => {
+  const loadImages = async (path: string = currentPath) => {
     try {
-      const response = await fetch("/api/admin/images", {
+      const params = new URLSearchParams({ path, limit: '100' });
+      const response = await fetch(`/api/admin/images?${params}`, {
         headers: createAuthHeaders(),
       });
       if (response.ok) {
@@ -67,9 +76,10 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
     }
   };
 
-  const loadFolders = async () => {
+  const loadFolders = async (path: string = currentPath) => {
     try {
-      const response = await fetch("/api/admin/folders", {
+      const params = new URLSearchParams({ path });
+      const response = await fetch(`/api/admin/folders?${params}`, {
         headers: createAuthHeaders(),
       });
       if (response.ok) {
@@ -82,6 +92,13 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
     } catch (error) {
       console.error("Errore nel caricamento delle cartelle:", error);
     }
+  };
+
+  const handleFolderChange = async (folderPath: string) => {
+    setCurrentPath(folderPath);
+    setSelectedFolder(folderPath);
+    await loadImages(folderPath);
+    await loadFolders(folderPath);
   };
 
   const convertToWebP = async (file: File): Promise<File> => {
@@ -148,10 +165,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
 
         const formData = new FormData();
         formData.append("image", webpFile);
-        formData.append(
-          "folder",
-          selectedFolder === "all" ? "general" : selectedFolder
-        );
+        formData.append("folder", currentPath);
 
         const response = await fetch("/api/admin/upload", {
           method: "POST",
@@ -186,7 +200,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
       const response = await fetch("/api/admin/delete", {
         method: "DELETE",
         headers: createAuthHeaders(),
-        body: JSON.stringify({ imageIds: Array.from(selectedImages) }),
+        body: JSON.stringify({ fileIds: Array.from(selectedImages) }),
       });
 
       if (response.ok) {
@@ -225,8 +239,8 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
         method: "POST",
         headers: createAuthHeaders(),
         body: JSON.stringify({
-          imageId: currentImageForTag,
-          tag: newTag.trim(),
+          fileId: currentImageForTag,
+          tags: [newTag.trim()],
         }),
       });
 
@@ -247,7 +261,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
       const response = await fetch("/api/admin/tags", {
         method: "DELETE",
         headers: createAuthHeaders(),
-        body: JSON.stringify({ imageId, tag }),
+        body: JSON.stringify({ fileId: imageId, tag }),
       });
 
       if (response.ok) {
@@ -262,7 +276,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
   };
 
   const handleDeploy = async () => {
-    if (!confirm("Avviare la build e il deploy del progetto?")) return;
+    if (!confirm("Triggerare il deploy su Vercel? Vercel gestirà automaticamente build e deployment.")) return;
 
     setIsDeploying(true);
 
@@ -274,11 +288,11 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
 
       if (response.ok) {
         const data = await response.json();
-        alert("Deploy avviato con successo!");
+        alert(`✅ ${data.message}\n\n${data.info || 'Controlla la dashboard di Vercel per monitorare il progresso.'}`);
         console.log("Deploy response:", data);
       } else {
         const errorData = await response.json();
-        alert(`Errore nel deploy: ${errorData.error || "Errore sconosciuto"}`);
+        alert(`❌ ${errorData.message || 'Errore nel deploy'}\n\nDettagli: ${errorData.details || 'Errore sconosciuto'}`);
       }
     } catch (error) {
       console.error("Errore nel deploy:", error);
@@ -288,10 +302,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
     }
   };
 
-  const filteredImages =
-    selectedFolder === "all"
-      ? images
-      : images.filter((img) => img.folder === selectedFolder);
+  const filteredImages = images.filter(img => img.type === 'file');
 
   const currentImage = images.find((img) => img.id === currentImageForTag);
 
@@ -329,46 +340,60 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
                 className={`inline-flex items-center px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 ${
                   isDeploying ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                title="Build e Deploy progetto"
+                title="Triggera deploy Vercel via webhook"
               >
                 <svg className="w-4 h-4 mr-2" viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="m37.5274 0 36.6253 65H.89009L37.5274 0Z" fill="currentColor"/>
                 </svg>
-                {isDeploying ? "Building..." : "Build & Deploy"}
+                {isDeploying ? "Deploying..." : "Deploy Vercel"}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Folder Navigation */}
+        {/* Path Navigation */}
         <div className="rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Cartelle</h2>
-          <div className="flex flex-wrap gap-2">
+          <h2 className="text-xl font-semibold mb-4">
+            Percorso ImageKit: {currentPath}
+          </h2>
+          <div className="flex flex-wrap gap-2 mb-4">
             <button
-              onClick={() => setSelectedFolder("all")}
+              onClick={() => handleFolderChange("/")}
               className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
-                selectedFolder === "all"
+                currentPath === "/"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               <FolderOpen className="w-4 h-4 mr-1" />
-              Tutte ({images.length})
+              Root
             </button>
-            {folders.map((folder) => (
+            {currentPath !== "/" && (
               <button
-                key={folder.name}
-                onClick={() => setSelectedFolder(folder.name)}
-                className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
-                  selectedFolder === folder.name
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
+                onClick={() => handleFolderChange(currentPath.split('/').slice(0, -1).join('/') || '/')}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-200 text-gray-700 hover:bg-gray-300"
+              >
+                ← Indietro
+              </button>
+            )}
+          </div>
+          
+          {/* Current folder contents */}
+          <div className="flex flex-wrap gap-2">
+            {images.filter(img => img.type === 'folder').map((folder) => (
+              <button
+                key={folder.id}
+                onClick={() => handleFolderChange(folder.filePath)}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
               >
                 <FolderOpen className="w-4 h-4 mr-1" />
-                {folder.name} ({folder.imageCount})
+                {folder.name}
               </button>
             ))}
+          </div>
+          
+          <div className="mt-4 text-sm text-gray-600">
+            File: {filteredImages.length} | Cartelle: {images.filter(img => img.type === 'folder').length}
           </div>
         </div>
 
@@ -393,7 +418,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
         {/* Images Grid */}
         <div className="rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold mb-4">
-            Immagini {selectedFolder !== "all" && `in ${selectedFolder}`}
+            File ImageKit in {currentPath === "/" ? "Root" : currentPath}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredImages.map((image) => (

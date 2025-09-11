@@ -1,33 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 import { authenticateAdmin, createAuthResponse } from '@/lib/auth';
-
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-const METADATA_FILE = path.join(UPLOAD_DIR, 'metadata.json');
-
-interface ImageMetadata {
-  id: string;
-  name: string;
-  url: string;
-  size: number;
-  tags: string[];
-  folder: string;
-  uploadedAt: string;
-}
+import { imagekit } from '@/utils/imagekit-client';
 
 interface Folder {
   name: string;
+  path: string;
   imageCount: number;
-}
-
-async function loadMetadata(): Promise<ImageMetadata[]> {
-  try {
-    const data = await fs.readFile(METADATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
 }
 
 export async function GET(request: NextRequest) {
@@ -36,21 +14,41 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const images = await loadMetadata();
-    
-    const folderCounts = images.reduce((acc, image) => {
-      acc[image.folder] = (acc[image.folder] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const { searchParams } = new URL(request.url);
+    const basePath = searchParams.get('path') || '/';
 
-    const folders: Folder[] = Object.entries(folderCounts).map(([name, count]) => ({
-      name,
+    // Get all files and folders from ImageKit
+    const files = await imagekit.listFiles({
+      limit: 1000,
+      path: basePath,
+      includeFolder: true,
+    });
+
+    // Extract unique folders and count their contents
+    const folderMap = new Map<string, number>();
+
+    files.forEach((file: any) => {
+      if (file.type === 'folder') {
+        folderMap.set(file.filePath, 0);
+      } else if (file.type === 'file') {
+        // Count files in each folder
+        const folderPath = file.filePath.split('/').slice(0, -1).join('/') || '/';
+        folderMap.set(folderPath, (folderMap.get(folderPath) || 0) + 1);
+      }
+    });
+
+    const folders: Folder[] = Array.from(folderMap.entries()).map(([path, count]) => ({
+      name: path.split('/').pop() || 'root',
+      path,
       imageCount: count,
     }));
 
     return NextResponse.json(folders);
-  } catch (error) {
-    console.error('Error loading folders:', error);
-    return NextResponse.json({ error: 'Failed to load folders' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error loading ImageKit folders:', error);
+    return NextResponse.json({ 
+      error: 'Failed to load ImageKit folders', 
+      details: error.message 
+    }, { status: 500 });
   }
 }

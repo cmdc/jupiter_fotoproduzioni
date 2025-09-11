@@ -8,11 +8,11 @@ account cmdc.business@gmail.com
 
 # TODO
 
-crea una pagina (/brnlgu95.admin) con password statica (Password123!), nascosta non indicizzata. Che dopo l'accesso ti permette di vedere i folder e le immagini di imakekit fare l'upload delle immagini, cancellarle, gestire i tag. E prima del caricacamento massimo di 5mb fai una conversione a .webp ottimizzata riducendo lo spazio al massimo ma mantenendo le proporzioni le dimensioni e una buona qualità.
-
-Aggiungi anche tasto deploy di vercel in questa pagina.
+Pagina Admin, non funzionano vorrei vedere il contenuto del mio bucket di imagekit e lavorare su di esso, quindi vedere file e cartelle di NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/veujbln6y... e caricare su una cartella cancellare un file aggiungere un tag tutto relativo ai file del mio imagekit. 
 
 prendi il feed di instagram e mostralo e crea una pagina apposta che visualizza come photography le immagini prese da instagram del account brunol.35ml
+
+Unifica le pagine photo-series e photography
 
 Eliminare i file .ttf se si usa il fonts di google ed eliminare anche il commento in layout...
 

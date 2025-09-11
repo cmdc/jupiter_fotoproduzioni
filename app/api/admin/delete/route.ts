@@ -1,33 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 import { authenticateAdmin, createAuthResponse } from '@/lib/auth';
-
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-const METADATA_FILE = path.join(UPLOAD_DIR, 'metadata.json');
-
-interface ImageMetadata {
-  id: string;
-  name: string;
-  url: string;
-  size: number;
-  tags: string[];
-  folder: string;
-  uploadedAt: string;
-}
-
-async function loadMetadata(): Promise<ImageMetadata[]> {
-  try {
-    const data = await fs.readFile(METADATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
-
-async function saveMetadata(metadata: ImageMetadata[]) {
-  await fs.writeFile(METADATA_FILE, JSON.stringify(metadata, null, 2));
-}
+import { imagekit } from '@/utils/imagekit-client';
 
 export async function DELETE(request: NextRequest) {
   if (!(await authenticateAdmin(request))) {
@@ -35,33 +8,41 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    const { imageIds } = await request.json();
+    const { fileIds } = await request.json();
 
-    if (!Array.isArray(imageIds)) {
-      return NextResponse.json({ error: 'Invalid image IDs' }, { status: 400 });
+    if (!Array.isArray(fileIds)) {
+      return NextResponse.json({ error: 'Invalid file IDs' }, { status: 400 });
     }
 
-    const metadata = await loadMetadata();
-    const imagesToDelete = metadata.filter(img => imageIds.includes(img.id));
+    const deletionResults = [];
+    let successCount = 0;
 
-    for (const image of imagesToDelete) {
-      const filePath = path.join(process.cwd(), 'public', image.url);
+    for (const fileId of fileIds) {
       try {
-        await fs.unlink(filePath);
-      } catch (error) {
-        console.error(`Failed to delete file ${filePath}:`, error);
+        await imagekit.deleteFile(fileId);
+        deletionResults.push({ fileId, success: true });
+        successCount++;
+      } catch (error: any) {
+        console.error(`Failed to delete ImageKit file ${fileId}:`, error);
+        deletionResults.push({ 
+          fileId, 
+          success: false, 
+          error: error.message 
+        });
       }
     }
 
-    const remainingMetadata = metadata.filter(img => !imageIds.includes(img.id));
-    await saveMetadata(remainingMetadata);
-
     return NextResponse.json({ 
       success: true, 
-      deletedCount: imagesToDelete.length 
+      deletedCount: successCount,
+      totalRequested: fileIds.length,
+      results: deletionResults
     });
-  } catch (error) {
-    console.error('Error deleting images:', error);
-    return NextResponse.json({ error: 'Failed to delete images' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error deleting ImageKit files:', error);
+    return NextResponse.json({ 
+      error: 'Failed to delete ImageKit files', 
+      details: error.message 
+    }, { status: 500 });
   }
 }

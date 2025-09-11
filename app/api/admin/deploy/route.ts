@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { authenticateAdmin, createAuthResponse } from '@/lib/auth';
-
-const execAsync = promisify(exec);
 
 export async function POST(request: NextRequest) {
   if (!(await authenticateAdmin(request))) {
@@ -11,83 +7,73 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    console.log('Starting build and deploy process...');
-    
-    // Esegui la build del progetto
-    const { stdout, stderr } = await execAsync('yarn build', {
-      cwd: process.cwd(),
-      timeout: 300000, // 5 minuti timeout
-    });
-
-    if (stderr && !stderr.includes('Warning:')) {
-      console.error('Build stderr:', stderr);
-      return NextResponse.json({ 
-        error: 'Build failed', 
-        details: stderr 
-      }, { status: 500 });
-    }
-
-    console.log('Build completed successfully');
-    console.log('Build stdout:', stdout);
+    console.log('Triggering Vercel deploy via webhook...');
 
     // Trigger Vercel deploy utilizzando l'integration URL
     const deployUrl = process.env.NEXT_DEPLOY_URL;
     
-    if (deployUrl) {
-      try {
-        console.log('Triggering Vercel deploy...');
-        
-        const deployResponse = await fetch(deployUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+    if (!deployUrl) {
+      return NextResponse.json({ 
+        error: 'Deploy webhook URL not configured',
+        message: 'NEXT_DEPLOY_URL environment variable is missing'
+      }, { status: 500 });
+    }
 
-        if (deployResponse.ok) {
-          const deployData = await deployResponse.json();
-          console.log('Deploy triggered successfully:', deployData);
-          
-          return NextResponse.json({ 
-            success: true, 
-            message: 'Build completed and deploy triggered successfully!',
-            buildOutput: stdout,
-            deployResponse: deployData
-          });
-        } else {
-          console.error('Deploy trigger failed:', deployResponse.statusText);
-          return NextResponse.json({ 
-            success: true, 
-            message: 'Build completed, but deploy trigger failed. Check Vercel settings.',
-            buildOutput: stdout,
-            deployError: `HTTP ${deployResponse.status}: ${deployResponse.statusText}`
-          });
+    try {
+      const deployResponse = await fetch(deployUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ref: 'master', // branch da deployare
+          message: 'Manual deploy triggered from admin panel'
+        })
+      });
+
+      if (deployResponse.ok) {
+        let deployData;
+        try {
+          deployData = await deployResponse.json();
+        } catch {
+          deployData = { message: 'Deploy triggered successfully' };
         }
-      } catch (deployError: any) {
-        console.error('Deploy trigger error:', deployError);
+        
+        console.log('Vercel deploy triggered successfully');
+        
         return NextResponse.json({ 
           success: true, 
-          message: 'Build completed, but deploy trigger failed.',
-          buildOutput: stdout,
-          deployError: deployError.message
+          message: 'Deploy triggered successfully! Vercel will handle the build and deployment.',
+          deployResponse: deployData,
+          status: `HTTP ${deployResponse.status}`,
+          info: 'You can monitor the deployment progress in your Vercel dashboard.'
         });
+      } else {
+        const errorText = await deployResponse.text().catch(() => 'Unknown error');
+        console.error('Deploy trigger failed:', deployResponse.status, errorText);
+        
+        return NextResponse.json({ 
+          error: 'Deploy trigger failed',
+          message: 'Failed to trigger Vercel deployment. Check your webhook URL and permissions.',
+          details: `HTTP ${deployResponse.status}: ${errorText}`,
+          webhookUrl: deployUrl.replace(/\/[^\/]*$/, '/***') // Hide sensitive parts of URL
+        }, { status: 500 });
       }
-    } else {
-      console.warn('NEXT_DEPLOY_URL not configured');
+    } catch (networkError: any) {
+      console.error('Network error triggering deploy:', networkError);
       return NextResponse.json({ 
-        success: true, 
-        message: 'Build completed successfully. NEXT_DEPLOY_URL not configured for auto-deploy.',
-        buildOutput: stdout
-      });
+        error: 'Network error',
+        message: 'Failed to reach Vercel webhook endpoint.',
+        details: networkError.message
+      }, { status: 500 });
     }
 
   } catch (error: any) {
-    console.error('Build/Deploy error:', error);
+    console.error('Deploy API error:', error);
     
     return NextResponse.json({ 
-      error: 'Build/Deploy failed', 
-      details: error.message,
-      stderr: error.stderr || 'No stderr available'
+      error: 'Deploy failed', 
+      details: error.message
     }, { status: 500 });
   }
 }

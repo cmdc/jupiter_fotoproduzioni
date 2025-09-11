@@ -1,43 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 import { authenticateAdmin, createAuthResponse } from '@/lib/auth';
-
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-const METADATA_FILE = path.join(UPLOAD_DIR, 'metadata.json');
-
-interface ImageMetadata {
-  id: string;
-  name: string;
-  url: string;
-  size: number;
-  tags: string[];
-  folder: string;
-  uploadedAt: string;
-}
-
-async function ensureUploadDir() {
-  try {
-    await fs.access(UPLOAD_DIR);
-  } catch {
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  }
-}
-
-async function loadMetadata(): Promise<ImageMetadata[]> {
-  await ensureUploadDir();
-  try {
-    const data = await fs.readFile(METADATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
-
-async function saveMetadata(metadata: ImageMetadata[]) {
-  await ensureUploadDir();
-  await fs.writeFile(METADATA_FILE, JSON.stringify(metadata, null, 2));
-}
+import { imagekit } from '@/utils/imagekit-client';
 
 export async function GET(request: NextRequest) {
   if (!(await authenticateAdmin(request))) {
@@ -45,10 +8,38 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const images = await loadMetadata();
-    return NextResponse.json(images);
-  } catch (error) {
-    console.error('Error loading images:', error);
-    return NextResponse.json({ error: 'Failed to load images' }, { status: 500 });
+    const { searchParams } = new URL(request.url);
+    const path = searchParams.get('path') || '/';
+    const limit = parseInt(searchParams.get('limit') || '50');
+
+    const files = await imagekit.listFiles({
+      limit,
+      path,
+      includeFolder: true,
+    });
+
+    // Transform ImageKit files to our interface
+    const transformedFiles = files.map((file: any) => ({
+      id: file.fileId,
+      name: file.name,
+      url: file.url,
+      size: file.size,
+      tags: file.tags || [],
+      folder: file.filePath.split('/').slice(0, -1).join('/') || '/',
+      uploadedAt: file.createdAt,
+      type: file.type, // 'file' or 'folder'
+      filePath: file.filePath,
+      width: file.width,
+      height: file.height,
+      fileType: file.fileType,
+    }));
+
+    return NextResponse.json(transformedFiles);
+  } catch (error: any) {
+    console.error('Error loading ImageKit files:', error);
+    return NextResponse.json({ 
+      error: 'Failed to load ImageKit files', 
+      details: error.message 
+    }, { status: 500 });
   }
 }

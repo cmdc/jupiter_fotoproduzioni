@@ -1,44 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import { authenticateAdmin, createAuthResponse } from '@/lib/auth';
-
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-const METADATA_FILE = path.join(UPLOAD_DIR, 'metadata.json');
-
-interface ImageMetadata {
-  id: string;
-  name: string;
-  url: string;
-  size: number;
-  tags: string[];
-  folder: string;
-  uploadedAt: string;
-}
-
-async function ensureUploadDir() {
-  try {
-    await fs.access(UPLOAD_DIR);
-  } catch {
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  }
-}
-
-async function loadMetadata(): Promise<ImageMetadata[]> {
-  await ensureUploadDir();
-  try {
-    const data = await fs.readFile(METADATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
-
-async function saveMetadata(metadata: ImageMetadata[]) {
-  await ensureUploadDir();
-  await fs.writeFile(METADATA_FILE, JSON.stringify(metadata, null, 2));
-}
+import { imagekit } from '@/utils/imagekit-client';
 
 export async function POST(request: NextRequest) {
   if (!(await authenticateAdmin(request))) {
@@ -48,43 +10,59 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('image') as File;
-    const folder = formData.get('folder') as string || 'general';
+    const folder = formData.get('folder') as string || '/';
+    const tags = formData.get('tags') as string || '';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large' }, { status: 400 });
+    if (file.size > 20 * 1024 * 1024) { // 20MB limit for ImageKit
+      return NextResponse.json({ error: 'File too large (max 20MB)' }, { status: 400 });
     }
 
-    await ensureUploadDir();
-
-    const id = uuidv4();
-    const fileExtension = path.extname(file.name);
-    const fileName = `${id}${fileExtension}`;
-    const filePath = path.join(UPLOAD_DIR, fileName);
-
+    // The file should already be converted to WebP from the frontend
     const bytes = await file.arrayBuffer();
-    await fs.writeFile(filePath, Buffer.from(bytes));
+    const buffer = Buffer.from(bytes);
 
-    const metadata = await loadMetadata();
-    const newImage: ImageMetadata = {
-      id,
-      name: file.name,
-      url: `/uploads/${fileName}`,
-      size: file.size,
-      tags: [],
-      folder,
-      uploadedAt: new Date().toISOString(),
-    };
+    // Prepare file name and path
+    const fileName = file.name;
+    const filePath = folder === '/' ? fileName : `${folder}/${fileName}`;
 
-    metadata.push(newImage);
-    await saveMetadata(metadata);
+    // Upload to ImageKit
+    const uploadResult = await imagekit.upload({
+      file: buffer,
+      fileName: fileName,
+      folder: folder === '/' ? undefined : folder,
+      tags: tags ? tags.split(',').map(t => t.trim()) : [],
+      useUniqueFileName: true,
+      transformation: {
+        pre: 'f-webp,q-85', // Force WebP format with 85% quality
+      },
+    });
 
-    return NextResponse.json({ success: true, image: newImage });
-  } catch (error) {
-    console.error('Error uploading file:', error);
-    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
+    return NextResponse.json({ 
+      success: true, 
+      image: {
+        id: uploadResult.fileId,
+        name: uploadResult.name,
+        url: uploadResult.url,
+        size: uploadResult.size,
+        tags: uploadResult.tags || [],
+        folder: folder,
+        uploadedAt: new Date().toISOString(),
+        filePath: uploadResult.filePath,
+        width: uploadResult.width,
+        height: uploadResult.height,
+        fileType: uploadResult.fileType,
+        type: 'file',
+      }
+    });
+  } catch (error: any) {
+    console.error('Error uploading to ImageKit:', error);
+    return NextResponse.json({ 
+      error: 'Failed to upload to ImageKit', 
+      details: error.message 
+    }, { status: 500 });
   }
 }

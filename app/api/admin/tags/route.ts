@@ -1,33 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 import { authenticateAdmin, createAuthResponse } from '@/lib/auth';
-
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-const METADATA_FILE = path.join(UPLOAD_DIR, 'metadata.json');
-
-interface ImageMetadata {
-  id: string;
-  name: string;
-  url: string;
-  size: number;
-  tags: string[];
-  folder: string;
-  uploadedAt: string;
-}
-
-async function loadMetadata(): Promise<ImageMetadata[]> {
-  try {
-    const data = await fs.readFile(METADATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
-
-async function saveMetadata(metadata: ImageMetadata[]) {
-  await fs.writeFile(METADATA_FILE, JSON.stringify(metadata, null, 2));
-}
+import { imagekit } from '@/utils/imagekit-client';
 
 export async function POST(request: NextRequest) {
   if (!(await authenticateAdmin(request))) {
@@ -35,28 +8,43 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { imageId, tag } = await request.json();
+    const { fileId, tags } = await request.json();
 
-    if (!imageId || !tag) {
-      return NextResponse.json({ error: 'Missing imageId or tag' }, { status: 400 });
+    if (!fileId || !tags) {
+      return NextResponse.json({ error: 'Missing fileId or tags' }, { status: 400 });
     }
 
-    const metadata = await loadMetadata();
-    const image = metadata.find(img => img.id === imageId);
+    // Ensure tags is an array
+    const tagsArray = Array.isArray(tags) ? tags : [tags];
 
-    if (!image) {
-      return NextResponse.json({ error: 'Image not found' }, { status: 404 });
-    }
+    // Get current file details
+    const fileDetails = await imagekit.getFileDetails(fileId);
+    const currentTags = fileDetails.tags || [];
 
-    if (!image.tags.includes(tag)) {
-      image.tags.push(tag);
-      await saveMetadata(metadata);
-    }
+    // Add new tags to existing ones
+    const tagSet = new Set([...currentTags, ...tagsArray]);
+    const updatedTags = Array.from(tagSet);
 
-    return NextResponse.json({ success: true, image });
-  } catch (error) {
-    console.error('Error adding tag:', error);
-    return NextResponse.json({ error: 'Failed to add tag' }, { status: 500 });
+    // Update file with new tags
+    const updatedFile = await imagekit.updateFileDetails(fileId, {
+      tags: updatedTags,
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      file: {
+        id: updatedFile.fileId,
+        tags: updatedFile.tags,
+        name: updatedFile.name,
+        url: updatedFile.url,
+      }
+    });
+  } catch (error: any) {
+    console.error('Error adding tags to ImageKit file:', error);
+    return NextResponse.json({ 
+      error: 'Failed to add tags', 
+      details: error.message 
+    }, { status: 500 });
   }
 }
 
@@ -66,25 +54,38 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    const { imageId, tag } = await request.json();
+    const { fileId, tag } = await request.json();
 
-    if (!imageId || !tag) {
-      return NextResponse.json({ error: 'Missing imageId or tag' }, { status: 400 });
+    if (!fileId || !tag) {
+      return NextResponse.json({ error: 'Missing fileId or tag' }, { status: 400 });
     }
 
-    const metadata = await loadMetadata();
-    const image = metadata.find(img => img.id === imageId);
+    // Get current file details
+    const fileDetails = await imagekit.getFileDetails(fileId);
+    const currentTags = fileDetails.tags || [];
 
-    if (!image) {
-      return NextResponse.json({ error: 'Image not found' }, { status: 404 });
-    }
+    // Remove the specified tag
+    const updatedTags = currentTags.filter((t: string) => t !== tag);
 
-    image.tags = image.tags.filter(t => t !== tag);
-    await saveMetadata(metadata);
+    // Update file with remaining tags
+    const updatedFile = await imagekit.updateFileDetails(fileId, {
+      tags: updatedTags,
+    });
 
-    return NextResponse.json({ success: true, image });
-  } catch (error) {
-    console.error('Error removing tag:', error);
-    return NextResponse.json({ error: 'Failed to remove tag' }, { status: 500 });
+    return NextResponse.json({ 
+      success: true, 
+      file: {
+        id: updatedFile.fileId,
+        tags: updatedFile.tags,
+        name: updatedFile.name,
+        url: updatedFile.url,
+      }
+    });
+  } catch (error: any) {
+    console.error('Error removing tag from ImageKit file:', error);
+    return NextResponse.json({ 
+      error: 'Failed to remove tag', 
+      details: error.message 
+    }, { status: 500 });
   }
 }
