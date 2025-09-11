@@ -174,8 +174,11 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
         });
 
         if (response.ok) {
-          await loadImages();
-          await loadFolders();
+          const result = await response.json();
+          if (result.success && result.image) {
+            // Aggiungi la nuova immagine allo stato
+            setImages(prevImages => [...prevImages, result.image]);
+          }
         } else {
           alert(`Errore nel caricamento di ${file.name}`);
         }
@@ -204,9 +207,11 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
       });
 
       if (response.ok) {
+        // Rimuovi le immagini eliminate dallo stato
+        setImages(prevImages => 
+          prevImages.filter(img => !selectedImages.has(img.id))
+        );
         setSelectedImages(new Set());
-        await loadImages();
-        await loadFolders();
       } else {
         alert("Errore nell'eliminazione delle immagini");
       }
@@ -245,8 +250,18 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
       });
 
       if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.file) {
+          // Aggiorna l'immagine specifica con i nuovi tag
+          setImages(prevImages => 
+            prevImages.map(img => 
+              img.id === currentImageForTag 
+                ? { ...img, tags: result.file.tags }
+                : img
+            )
+          );
+        }
         setNewTag("");
-        await loadImages();
       } else {
         alert("Errore nell'aggiunta del tag");
       }
@@ -265,7 +280,17 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
       });
 
       if (response.ok) {
-        await loadImages();
+        const result = await response.json();
+        if (result.success && result.file) {
+          // Aggiorna l'immagine specifica rimuovendo il tag
+          setImages(prevImages => 
+            prevImages.map(img => 
+              img.id === imageId 
+                ? { ...img, tags: result.file.tags || [] }
+                : img
+            )
+          );
+        }
       } else {
         alert("Errore nella rimozione del tag");
       }
@@ -289,7 +314,6 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
       if (response.ok) {
         const data = await response.json();
         alert(`✅ ${data.message}\n\n${data.info || 'Controlla la dashboard di Vercel per monitorare il progresso.'}`);
-        console.log("Deploy response:", data);
       } else {
         const errorData = await response.json();
         alert(`❌ ${errorData.message || 'Errore nel deploy'}\n\nDettagli: ${errorData.details || 'Errore sconosciuto'}`);

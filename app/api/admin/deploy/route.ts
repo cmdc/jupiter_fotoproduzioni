@@ -7,7 +7,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    console.log('Triggering Vercel deploy via webhook...');
 
     // Trigger Vercel deploy utilizzando l'integration URL
     const deployUrl = process.env.NEXT_DEPLOY_URL;
@@ -39,7 +38,6 @@ export async function POST(request: NextRequest) {
           deployData = { message: 'Deploy triggered successfully' };
         }
         
-        console.log('Vercel deploy triggered successfully');
         
         return NextResponse.json({ 
           success: true, 

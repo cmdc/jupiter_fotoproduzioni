@@ -28,11 +28,14 @@ export async function GET(request: NextRequest) {
     const folderMap = new Map<string, number>();
 
     files.forEach((file: any) => {
-      if (file.type === 'folder') {
-        folderMap.set(file.filePath, 0);
-      } else if (file.type === 'file') {
+      // Gestisce il caso in cui filePath sia undefined o null
+      const filePath = file.filePath || file.name || '';
+      
+      if (file.type === 'folder' && filePath) {
+        folderMap.set(filePath, 0);
+      } else if (file.type === 'file' && filePath) {
         // Count files in each folder
-        const folderPath = file.filePath.split('/').slice(0, -1).join('/') || '/';
+        const folderPath = filePath.split('/').slice(0, -1).join('/') || '/';
         folderMap.set(folderPath, (folderMap.get(folderPath) || 0) + 1);
       }
     });

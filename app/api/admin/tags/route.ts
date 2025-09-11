@@ -68,15 +68,18 @@ export async function DELETE(request: NextRequest) {
     const updatedTags = currentTags.filter((t: string) => t !== tag);
 
     // Update file with remaining tags
+    // ImageKit might have issues with empty arrays, try undefined when no tags
+    const tagsToUpdate = updatedTags.length > 0 ? updatedTags : undefined;
+    
     const updatedFile = await imagekit.updateFileDetails(fileId, {
-      tags: updatedTags,
+      tags: tagsToUpdate,
     });
 
     return NextResponse.json({ 
       success: true, 
       file: {
         id: updatedFile.fileId,
-        tags: updatedFile.tags,
+        tags: updatedTags, // Use our filtered tags instead of ImageKit's response
         name: updatedFile.name,
         url: updatedFile.url,
       }
