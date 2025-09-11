@@ -115,15 +115,56 @@ ${message}
 Questa email è stata inviata dal form di contatto del sito web.
     `;
 
+    // Prepare recipient list
+    let recipients = [
+      process.env.NEXT_CONTACT_EMAIL || "info@jupiterfoto.it"
+    ];
+    
+    // Add additional recipients if configured
+    if (process.env.NEXT_CONTACT_EMAIL_2) {
+      recipients.push(process.env.NEXT_CONTACT_EMAIL_2);
+    }
+    
+    // Support comma-separated list in NEXT_CONTACT_EMAILS
+    if (process.env.NEXT_CONTACT_EMAILS) {
+      const additionalEmails = process.env.NEXT_CONTACT_EMAILS
+        .split(',')
+        .map(email => email.trim())
+        .filter(email => email.length > 0);
+      recipients = [...recipients, ...additionalEmails];
+    }
+    
+    // Remove duplicates
+    recipients = Array.from(new Set(recipients));
+
+    // Prepare BCC list
+    let bccRecipients: string[] = [];
+    
+    // Support BCC recipients from environment variables
+    if (process.env.NEXT_CONTACT_BCC) {
+      const bccEmails = process.env.NEXT_CONTACT_BCC
+        .split(',')
+        .map(email => email.trim())
+        .filter(email => email.length > 0);
+      bccRecipients = Array.from(new Set(bccEmails)); // Remove duplicates
+    }
+
     // Send email
-    const info = await transporter.sendMail({
+    const emailOptions: nodemailer.SendMailOptions = {
       from: `"Sito Web Luigi Bruno" <${process.env.NEXT_SMTP_USER}>`,
-      to: process.env.NEXT_CONTACT_EMAIL || "info@jupiterfoto.it",
+      to: recipients,
       subject: `Nuova richiesta di contatto da ${name}`,
       text: textContent,
       html: htmlContent,
       replyTo: email,
-    });
+    };
+
+    // Add BCC only if there are recipients
+    if (bccRecipients.length > 0) {
+      emailOptions.bcc = bccRecipients;
+    }
+
+    const info = await transporter.sendMail(emailOptions);
 
     console.log("Email sent: %s", info.messageId);
 
