@@ -45,7 +45,6 @@ yarn lint
   - `layout.tsx` - Root layout with navigation, theme providers, and Google Analytics
   - `page.tsx` - Home page
   - `/photography` - Photography gallery routes
-  - `/photo-series` - Photography series routes
   - `/projects` - Projects showcase
   - `/about` - About page
   - `/@modal` - Parallel route for modal functionality
