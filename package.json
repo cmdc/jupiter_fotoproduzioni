@@ -30,6 +30,7 @@
     "eslint": "^8.51.0",
     "eslint-config-next": "^13.5.4",
     "framer-motion": "^10.16.4",
+    "gsap": "^3.13.0",
     "imagekit": "^6.0.0",
     "jose": "^6.1.0",
     "lucide-react": "^0.284.0",

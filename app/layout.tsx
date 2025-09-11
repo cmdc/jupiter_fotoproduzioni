@@ -124,7 +124,6 @@ const RootLayout: FC<RootLayoutProps> = ({ children, modal }) => {
         <StructuredData type="WebSite" />
         <GoogleAnalytics />
       </body>
-      {/* {modal} */}
     </html>
   );
 };
