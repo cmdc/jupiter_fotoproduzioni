@@ -16,7 +16,11 @@
       "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build)",
       "Bash(SKIP_ENV_VALIDATION=true npm run build)",
       "Bash(curl:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "WebSearch",
+      "Bash(yarn dev)",
+      "Bash(npm i:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []

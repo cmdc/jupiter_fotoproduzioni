@@ -9,9 +9,13 @@ import Image from "next/image";
 type Props = {};
 
 export const metadata: Metadata = {
-  title: "Photography",
+  title: "Portfolio Fotografico",
   description:
-    "A moment in time and space, captured and rendered for its perceived beauty.",
+    "Scopri il portfolio fotografico di Luigi Bruno. Galleria di immagini professionali che catturano emozioni, momenti speciali e la bellezza della Basilicata.",
+  openGraph: {
+    title: "Portfolio Fotografico | Luigi Bruno Fotografo Basilicata",
+    description: "Esplora la galleria fotografica di Luigi Bruno. Immagini professionali che raccontano storie e catturano la bellezza dei momenti più preziosi.",
+  },
 };
 
 export default async function Page({}: Props) {
@@ -57,8 +61,8 @@ export default async function Page({}: Props) {
       <AnimationWrapper>
         <div>
           <Header
-            title="Photography"
-            subtitle="A moment in time and space, captured and rendered for its perceived beauty."
+            title="Portfolio Fotografico"
+            subtitle="Momenti catturati nel tempo, emozioni che diventano arte attraverso l'obiettivo."
           />
           <section className="grid md:grid-cols-gallery auto-rows-[5px] py-24 md:mx-1">
             {data.props.images.map((image: ImageProps, index: number) => (

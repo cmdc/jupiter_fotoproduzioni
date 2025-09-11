@@ -3,114 +3,117 @@ import AnimationWrapper from "@/components/ui/animation-wrapper";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description: "Privacy policy and cookie information for Jupiter Foto.",
+  title: "Privacy Policy | Informativa sulla Privacy",
+  description: "Informativa sulla privacy e sui cookie di Luigi Bruno Fotografo. Scopri come trattiamo i tuoi dati personali e l&apos;utilizzo dei cookie sul nostro sito web.",
+  openGraph: {
+    title: "Privacy Policy | Luigi Bruno Fotografo",
+    description: "Informativa sulla privacy e politica sui cookie per i servizi fotografici di Luigi Bruno in Basilicata.",
+  },
 };
 
 export default function PrivacyPolicyPage() {
   return (
     <AnimationWrapper>
       <Header
-        title="Privacy Policy"
-        subtitle="Information about how we handle your data and cookies"
+        title="Informativa sulla Privacy"
+        subtitle="Informazioni su come trattiamo i tuoi dati e i cookie"
       />
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="prose prose-gray dark:prose-invert max-w-none">
           <section className="mb-8">
             <h2 className="text-2xl font-bold mb-4 select-none">
-              Cookie Usage
+              Utilizzo dei Cookie
             </h2>
             <div className="space-y-4 text-muted-foreground">
               <h3 className="text-lg font-semibold text-foreground select-none">
-                Necessary Cookies
+                Cookie Necessari
               </h3>
               <p className="select-none">
-                These cookies are essential for the website to function
-                properly. They enable basic functionality such as page
-                navigation, form submissions, and access to secure areas of the
-                website. The website cannot function properly without these
-                cookies.
+                Questi cookie sono essenziali per il corretto funzionamento del
+                sito web. Abilitano funzionalità di base come la navigazione tra
+                le pagine, l&apos;invio di moduli e l&apos;accesso ad aree sicure del sito.
+                Il sito web non può funzionare correttamente senza questi cookie.
               </p>
 
               <h3 className="text-lg font-semibold text-foreground select-none">
-                Analytics Cookies
+                Cookie di Analisi
               </h3>
               <p className="select-none">
-                We use Google Analytics to understand how visitors interact with
-                our website. These cookies collect information such as the
-                number of visitors, which pages are most popular, and how users
-                navigate through the site. All information collected is
-                aggregated and anonymous.
+                Utilizziamo Google Analytics per comprendere come i visitatori
+                interagiscono con il nostro sito web. Questi cookie raccolgono
+                informazioni come il numero di visitatori, quali pagine sono più
+                popolari e come gli utenti navigano nel sito. Tutte le
+                informazioni raccolte sono aggregate e anonime.
               </p>
 
               <h3 className="text-lg font-semibold text-foreground select-none">
-                Marketing Cookies
+                Cookie di Marketing
               </h3>
               <p className="select-none">
-                These cookies track visitors across websites to display relevant
-                advertisements and measure the effectiveness of advertising
-                campaigns.
+                Questi cookie tracciano i visitatori sui siti web per mostrare
+                annunci pubblicitari pertinenti e misurare l&apos;efficacia delle
+                campagne pubblicitarie.
               </p>
 
               <h3 className="text-lg font-semibold text-foreground select-none">
-                Preference Cookies
+                Cookie di Preferenza
               </h3>
               <p className="select-none">
-                These cookies remember your preferences and settings, such as
-                your preferred language or theme, to provide a more personalized
-                experience.
+                Questi cookie ricordano le tue preferenze e impostazioni, come
+                la lingua preferita o il tema, per fornire un&apos;esperienza più
+                personalizzata.
               </p>
             </div>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold mb-4 select-none">
-              Data Collection
+              Raccolta Dati
             </h2>
             <p className="text-muted-foreground select-none">
-              We collect minimal data necessary to provide and improve our
-              services. This includes:
+              Raccogliamo i dati minimi necessari per fornire e migliorare i
+              nostri servizi. Questo include:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li className="select-none">
-                Basic website usage analytics (page views, session duration)
+                Analisi di base sull&apos;utilizzo del sito web (visualizzazioni di pagina, durata delle sessioni)
               </li>
               <li className="select-none">
-                Technical information (browser type, device information)
+                Informazioni tecniche (tipo di browser, informazioni sul dispositivo)
               </li>
-              <li className="select-none">Your cookie preferences</li>
+              <li className="select-none">Le tue preferenze sui cookie</li>
             </ul>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 select-none">Your Rights</h2>
+            <h2 className="text-2xl font-bold mb-4 select-none">I Tuoi Diritti</h2>
             <p className="text-muted-foreground select-none">
-              You have the right to:
+              Hai il diritto di:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li className="select-none">
-                Accept or decline non-essential cookies
+                Accettare o rifiutare i cookie non essenziali
               </li>
               <li className="select-none">
-                Change your cookie preferences at any time
+                Modificare le tue preferenze sui cookie in qualsiasi momento
               </li>
               <li className="select-none">
-                Request information about data we collect
+                Richiedere informazioni sui dati che raccogliamo
               </li>
-              <li className="select-none">Request deletion of your data</li>
+              <li className="select-none">Richiedere la cancellazione dei tuoi dati</li>
             </ul>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 select-none">Contact</h2>
+            <h2 className="text-2xl font-bold mb-4 select-none">Contatti</h2>
             <p className="text-muted-foreground select-none">
-              If you have any questions about this privacy policy or our use of
-              cookies, please contact us at{" "}
+              Se hai domande su questa informativa sulla privacy o sul nostro
+              utilizzo dei cookie, contattaci all&apos;indirizzo{" "}
               <a
-                href="mailto:ashwinmanghat@gmail.com"
+                href="mailto:info@jupiterfoto.it"
                 className="text-primary underline hover:text-primary/80"
               >
-                ashwinmanghat@gmail.com
+                info@jupiterfoto.it
               </a>
               .
             </p>
@@ -118,7 +121,7 @@ export default function PrivacyPolicyPage() {
 
           <section>
             <p className="text-sm text-muted-foreground select-none">
-              Last updated: {new Date().toLocaleDateString()}
+              Ultimo aggiornamento: {new Date().toLocaleDateString('it-IT')}
             </p>
           </section>
         </div>

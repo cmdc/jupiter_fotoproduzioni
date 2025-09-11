@@ -2,6 +2,21 @@ import { imagekit, imagekitClient } from "./imagekit-client";
 import { ImageProps, ImageSeriesProps } from "./types";
 import getBase64ImageUrl from "@/lib/generate-blur-placeholder";
 
+/*
+ * ImageKit Organization Migration:
+ * 
+ * OLD SYSTEM (Tag-based):
+ * - Individual photos: No "series" tag
+ * - Photo series: Tagged with "series:seriesName"
+ * 
+ * NEW SYSTEM (Folder-based):
+ * - Individual photos: Stored in /photography folder
+ * - Photo series: Stored in /series/[seriesName] subfolders
+ * 
+ * This file now uses folder-based organization with fallback to tag-based
+ * for backward compatibility during the transition period.
+ */
+
 // Helper function to create slug from title
 const createSlug = (str: string) => {
   str = str.replace(/^\s+|\s+$/g, ""); // trim
@@ -36,13 +51,28 @@ async function getImageKitFiles() {
   }
 }
 
-// Process individual images for photography gallery
+// Get files from specific folder
+async function getImageKitFilesFromFolder(folderPath: string) {
+  try {
+    const response = await imagekit.listFiles({
+      limit: 1000,
+      path: folderPath,
+      includeFolder: false,
+    });
+    return response;
+  } catch (error) {
+    console.error(`Error fetching ImageKit files from ${folderPath}:`, error);
+    return [];
+  }
+}
+
+// Process individual images for photography gallery (folder-based)
 async function processImages(files: any[]) {
   const photographs = files.filter(
     (file) =>
       file.type === "file" &&
-      file.mimeType?.startsWith("image/") &&
-      !file.tags?.includes("series") // Individual photos, not part of series
+      file.mimeType?.startsWith("image/")
+      // Now using folder-based organization, no tag filtering needed
   );
   console.log(`Processing ${photographs.length} photographs`);
 
@@ -100,7 +130,7 @@ async function processImages(files: any[]) {
   };
 }
 
-// Get individual photographs for gallery
+// Get individual photographs for gallery (from photography folder)
 export async function getDataPhotographs() {
   // Check if ImageKit credentials are configured
   if (
@@ -111,12 +141,27 @@ export async function getDataPhotographs() {
   }
 
   try {
-    const files = await getImageKitFiles();
-    console.log(`Fetched ${files.length} files from ImageKit`);
+    // Get files from photography folder only
+    const files = await getImageKitFilesFromFolder("/photography");
     return await processImages(files);
   } catch (error) {
     console.error("Error in getDataPhotographs:", error);
-    throw error;
+    // Fallback to old method if folder doesn't exist
+    try {
+      console.log("Falling back to tag-based method...");
+      const allFiles = await getImageKitFiles();
+      const filteredFiles = allFiles.filter(
+        (file: any) =>
+          file.type === "file" &&
+          file.mimeType?.startsWith("image/") &&
+          !file.tags?.includes("series")
+      );
+      console.log(`Fallback: Processing ${filteredFiles.length} photographs`);
+      return await processImages(filteredFiles);
+    } catch (fallbackError) {
+      console.error("Fallback method also failed:", fallbackError);
+      throw error;
+    }
   }
 }
 
@@ -161,7 +206,7 @@ export async function getAPhoto(id: string) {
   }
 }
 
-// Get photo series (folders with photos)
+// Get photo series (from series folder and subfolders)
 export async function getPhotoSeries() {
   if (
     !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
@@ -171,24 +216,23 @@ export async function getPhotoSeries() {
   }
 
   try {
-    // Since ImageKit doesn't have folders in the same way as Contentful,
-    // we'll use tags to organize photo series
-    // Get all files and group them by tags
-    const allFiles = await getImageKitFiles();
+    // Get all files from series folder
+    const seriesFiles = await getImageKitFilesFromFolder("/series");
+    
+    // Group files by their subfolder path
     const seriesMap = new Map<string, any[]>();
-
-    // Group files by series tag
-    allFiles.forEach((file: any) => {
-      if (file.tags && file.tags.length > 0) {
-        file.tags.forEach((tag: string) => {
-          if (tag.startsWith("series:")) {
-            const seriesName = tag.replace("series:", "");
-            if (!seriesMap.has(seriesName)) {
-              seriesMap.set(seriesName, []);
-            }
-            seriesMap.get(seriesName)?.push(file);
+    
+    seriesFiles.forEach((file: any) => {
+      if (file.type === "file" && file.mimeType?.startsWith("image/")) {
+        // Extract series name from file path (e.g., /series/nature/photo1.jpg -> nature)
+        const pathParts = file.filePath.split('/');
+        if (pathParts.length >= 3 && pathParts[1] === 'series') {
+          const seriesName = pathParts[2]; // Get the immediate subfolder name
+          if (!seriesMap.has(seriesName)) {
+            seriesMap.set(seriesName, []);
           }
-        });
+          seriesMap.get(seriesName)?.push(file);
+        }
       }
     });
 
@@ -256,8 +300,87 @@ export async function getPhotoSeries() {
       },
     };
   } catch (error) {
-    console.error("Error in getPhotoSeries:", error);
-    throw error;
+    console.error("Error in getPhotoSeries (folder-based):", error);
+    // Fallback to tag-based method if folder doesn't exist
+    try {
+      console.log("Falling back to tag-based series method...");
+      const allFiles = await getImageKitFiles();
+      const seriesMap = new Map<string, any[]>();
+
+      // Group files by series tag (old method)
+      allFiles.forEach((file: any) => {
+        if (file.tags && file.tags.length > 0) {
+          file.tags.forEach((tag: string) => {
+            if (tag.startsWith("series:")) {
+              const seriesName = tag.replace("series:", "");
+              if (!seriesMap.has(seriesName)) {
+                seriesMap.set(seriesName, []);
+              }
+              seriesMap.get(seriesName)?.push(file);
+            }
+          });
+        }
+      });
+
+      const seriesResults: ImageSeriesProps[] = [];
+      let seriesIndex = 0;
+
+      for (const [seriesName, files] of Array.from(seriesMap.entries())) {
+        if (files.length === 0) continue;
+        const seriesImages = await processSeriesImages(files);
+        const coverImage = files[0];
+        const coverImageUrl = imagekitClient.url({
+          path: coverImage.filePath,
+          transformation: [
+            {
+              width: 600,
+              height: 400,
+              crop: "maintain_ratio",
+              quality: 80,
+              format: "webp",
+            },
+          ],
+        });
+
+        const seriesTitle = coverImage.customMetadata?.seriesTitle || seriesName;
+        const description =
+          coverImage.customMetadata?.seriesDescription ||
+          `Photo series: ${seriesTitle}`;
+
+        let coverBlurDataURL;
+        try {
+          coverBlurDataURL = await getBase64ImageUrl(coverImageUrl);
+        } catch (error) {
+          coverBlurDataURL = undefined;
+        }
+
+        seriesResults.push({
+          id: seriesIndex,
+          idc: `series-${seriesIndex}`,
+          slug: createSlug(seriesTitle),
+          src: coverImageUrl,
+          seriesTitle,
+          description,
+          alt: seriesTitle,
+          date:
+            coverImage.customMetadata?.date ||
+            new Date(coverImage.createdAt).toLocaleDateString(),
+          blurDataURL: coverBlurDataURL,
+          images: seriesImages.props.images,
+        });
+
+        seriesIndex++;
+      }
+
+      return {
+        props: {
+          images: seriesResults,
+        },
+      };
+    } catch (fallbackError) {
+      console.error("Fallback series method also failed:", fallbackError);
+      throw error;
+    }
   }
 }
 

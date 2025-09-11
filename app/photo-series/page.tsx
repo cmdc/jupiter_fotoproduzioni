@@ -10,8 +10,12 @@ import { Metadata } from "next";
 type Props = {};
 
 export const metadata: Metadata = {
-  title: "Photo Series",
-  description: "Photographs in meaningful grouping.",
+  title: "Serie Fotografiche",
+  description: "Collezioni fotografiche tematiche di Luigi Bruno. Progetti matrimoniali, eventi speciali e servizi fotografici organizzati per raccontare storie complete attraverso le immagini.",
+  openGraph: {
+    title: "Serie Fotografiche | Luigi Bruno Fotografo Matrimoni",
+    description: "Esplora le serie fotografiche di Luigi Bruno. Progetti completi di matrimoni e eventi in Basilicata, raccontati attraverso collezioni di immagini curate.",
+  },
 };
 
 const Page = async (props: Props) => {
@@ -52,9 +56,9 @@ const Page = async (props: Props) => {
     return (
       <AnimationWrapper>
         <Header
-          title="Photo Series"
-          subtitle="Photographs in meaningful grouping."
-          subtitle2="A message conveyed, a feeling captured through a series of images."
+          title="Serie Fotografiche"
+          subtitle="Collezioni tematiche che raccontano storie complete."
+          subtitle2="Matrimoni, eventi e momenti speciali organizzati in progetti fotografici curati."
         />
 
         <div className="flex flex-col items-center justify-between md:px-24 pt-24">

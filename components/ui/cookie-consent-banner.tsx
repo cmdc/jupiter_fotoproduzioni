@@ -80,15 +80,15 @@ export function CookieConsentBanner() {
             <div className="flex items-center gap-2">
               <span className="text-lg">🍪</span>
               <h3 className="text-lg font-semibold select-none">
-                Cookie Preferences
+                Preferenze Cookie
               </h3>
             </div>
 
             {/* Main message */}
             <p className="text-sm text-muted-foreground select-none">
-              We use cookies to enhance your browsing experience, serve
-              personalized content, and analyze our traffic. By clicking
-              &quot;Accept All&quot;, you consent to our use of cookies.
+              Utilizziamo i cookie per migliorare la tua esperienza di navigazione,
+              fornire contenuti personalizzati e analizzare il nostro traffico.
+              Cliccando &quot;Accetta Tutti&quot;, acconsenti al nostro utilizzo dei cookie.
             </p>
 
             {/* Cookie details (expandable) */}
@@ -106,17 +106,17 @@ export function CookieConsentBanner() {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium text-sm select-none">
-                          Necessary Cookies
+                          Cookie Necessari
                         </h4>
                         <Badge
                           variant="secondary"
                           className="text-xs select-none"
                         >
-                          Required
+                          Richiesti
                         </Badge>
                       </div>
                       <p className="text-xs text-muted-foreground select-none">
-                        Essential for the website to function properly.
+                        Essenziali per il corretto funzionamento del sito web.
                       </p>
                     </div>
                     <div className="flex items-center">
@@ -137,11 +137,11 @@ export function CookieConsentBanner() {
                       className="space-y-1 flex-1 cursor-pointer"
                     >
                       <h4 className="font-medium text-sm select-none">
-                        Analytics Cookies
+                        Cookie di Analisi
                       </h4>
                       <p className="text-xs text-muted-foreground select-none">
-                        Help us understand how visitors interact with our
-                        website.
+                        Ci aiutano a capire come i visitatori interagiscono con il
+                        nostro sito web.
                       </p>
                     </label>
                     <div className="flex items-center">
@@ -219,7 +219,7 @@ export function CookieConsentBanner() {
                 onClick={() => setShowDetails(!showDetails)}
                 className="select-none"
               >
-                {showDetails ? "Hide Details" : "Cookie Settings"}
+                {showDetails ? "Nascondi Dettagli" : "Impostazioni Cookie"}
               </Button>
 
               <div className="flex gap-2 sm:ml-auto">
@@ -229,7 +229,7 @@ export function CookieConsentBanner() {
                   onClick={handleAcceptNecessary}
                   className="select-none"
                 >
-                  Necessary Only
+                  Solo Necessari
                 </Button>
 
                 {showDetails ? (
@@ -238,7 +238,7 @@ export function CookieConsentBanner() {
                     onClick={handleSavePreferences}
                     className="select-none"
                   >
-                    Save Preferences
+                    Salva Preferenze
                   </Button>
                 ) : (
                   <Button
@@ -246,7 +246,7 @@ export function CookieConsentBanner() {
                     onClick={handleAcceptAll}
                     className="select-none"
                   >
-                    Accept All
+                    Accetta Tutti
                   </Button>
                 )}
               </div>
@@ -254,12 +254,12 @@ export function CookieConsentBanner() {
 
             {/* Privacy policy link */}
             <p className="text-xs text-muted-foreground select-none">
-              For more information, see our{" "}
+              Per maggiori informazioni, consulta la nostra{" "}
               <a
                 href="/privacy-policy"
                 className="underline hover:text-foreground transition-colors"
               >
-                Privacy Policy
+                Informativa sulla Privacy
               </a>
               .
             </p>

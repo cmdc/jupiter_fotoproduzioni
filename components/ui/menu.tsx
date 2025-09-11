@@ -6,6 +6,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import MenuElements from "../../lib/menu-elements";
 import ThemeToggle from "./my-theme-toggle";
+import { Logo } from "./logo";
 
 export default function Menu() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -18,9 +19,7 @@ export default function Menu() {
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="m-2.5 p-2">
-            <p className="scroll-m-20 text-md font-extrabold tracking-tight lg:text-lg select-none">
-              Jupiter Foto
-            </p>
+            <Logo className="h-6 lg:h-8 w-auto" />
             <span className="sr-only">Jupiter Foto</span>
           </Link>
         </div>
@@ -58,9 +57,7 @@ export default function Menu() {
               className="-m-1.5 p-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <p className="scroll-m-20 text-md font-extrabold tracking-tight lg:text-lg select-none">
-                Jupiter Foto
-              </p>
+              <Logo className="h-6 w-auto" />
               <span className="sr-only">Jupiter Foto</span>
             </Link>
             <button

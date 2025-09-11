@@ -1,12 +1,22 @@
-# The basic framework of the portfolio is setup
+# JUPITER FOTO The basic of the portfolio is setup
 
-## things to check out later
+## IMAKEKIT
 
-[ ] contentful using graphql instead of the traditional approach
-[ ] Framer motion and other animation styles
-[x] add projects
-[ ] Loading states for the modal with image - refernece [this video](https://twitter.com/asidorenko_/status/1688633177403789314)
-[ ] fancier modal with gallery?
+account cmdc.business@gmail.com
+
+## DNS aruba
+
+# TODO
+
+Aggiungi nella pagina about il form di contatto con il submit delle email... (copia da bio-2) 
+
+il caricamento delle foto potrebbe essere "statico" pero poi deve fare il deploy ...
+
+al massimo fai un mini progetto o pagina segreta dove carica le immagini e fa il deploy...
+
+Eliminare i file .ttf se si usa il fonts di google ed eliminare anche il commento in layout...
+
+Aggiorna a next 15 e tutte le cose annesse...
 
 ## OG card generation
 

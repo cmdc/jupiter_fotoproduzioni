@@ -42,8 +42,20 @@ export async function generateMetadata(
     }
 
     return {
-      title: `Photo Series | ${data.seriesTitle}`,
-      description: data.description,
+      title: `${data.seriesTitle} | Serie Fotografica Luigi Bruno`,
+      description: `${data.description} - Serie fotografica di Luigi Bruno, fotografo specializzato in matrimoni e eventi in Basilicata.`,
+      openGraph: {
+        title: `${data.seriesTitle} | Luigi Bruno Fotografo`,
+        description: `${data.description} - Progetto fotografico completo di Luigi Bruno.`,
+        images: [
+          {
+            url: data.src,
+            width: 1200,
+            height: 630,
+            alt: data.seriesTitle,
+          },
+        ],
+      },
     };
   } catch (error) {
     console.warn("Failed to generate metadata for photo-series:", error);

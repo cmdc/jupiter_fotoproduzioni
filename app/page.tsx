@@ -9,7 +9,11 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Home",
   description:
-    "The world as it is experienced by a particular organism. A website by Ashwin Manghat",
+    "Luigi Bruno, fotografo professionista specializzato in matrimoni e eventi a Potenza, Satriano di Lucania e Basilicata. Portfolio fotografico e servizi per catturare i tuoi momenti più preziosi.",
+  openGraph: {
+    title: "Luigi Bruno Fotografo - Matrimoni e Eventi in Basilicata",
+    description: "Scopri il portfolio di Luigi Bruno, fotografo specializzato in matrimoni e eventi. Servizi fotografici professionali a Potenza, Satriano di Lucania e tutta la Basilicata.",
+  },
 };
 
 export default function Home() {
