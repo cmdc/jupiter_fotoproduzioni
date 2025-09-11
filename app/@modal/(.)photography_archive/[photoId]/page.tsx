@@ -1,6 +1,6 @@
 import ModalSwiper from "@/components/swiper/modal-swiper";
 import Modal from "@/components/ui/Modal/modal";
-import { getAnAsset, getDataPhotographs } from "@/utils/contentful-fetches";
+import { getAnAsset, getDataPhotographs } from "@/utils/imagekit-fetches";
 import { Metadata, ResolvingMetadata } from "next";
 
 type Props = { params: { photoId: string } };

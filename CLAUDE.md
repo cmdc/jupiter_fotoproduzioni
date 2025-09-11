@@ -4,17 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 13+ photography portfolio website ("Jupiter Foto") that showcases photography series and projects. The site uses Contentful CMS as a headless CMS for content management and features a modern stack with TypeScript, Tailwind CSS, and Framer Motion.
+This is a Next.js 13+ photography portfolio website ("Jupiter Foto") that showcases photography galleries and Instagram feed. The site uses ImageKit for image storage and optimization, featuring a modern stack with TypeScript, Tailwind CSS, and Framer Motion.
 
 ## Technology Stack
 
 - **Framework**: Next.js 13+ with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS with custom animations (tailwindcss-animate)
-- **CMS**: Contentful (using GraphQL API)
+- **Image Storage**: ImageKit with custom transformation API
 - **UI Components**: Radix UI primitives with custom implementations
 - **Animations**: Framer Motion
-- **Image Optimization**: Next.js Image with custom Contentful loader + Plaiceholder for blur placeholders
+- **Image Optimization**: Next.js Image with custom ImageKit loader + Plaiceholder for blur placeholders
 - **Icons**: Heroicons and Lucide React
 - **Package Manager**: Yarn
 
@@ -59,11 +59,12 @@ yarn lint
 ### Utilities & Libraries
 
 - `/lib` - Shared utilities and configurations
-  - `contentful-loader.tsx` - Custom image loader for Contentful
+  - `imagekit-loader.tsx` - Custom image loader for ImageKit
   - `providers.tsx` - Theme and context providers
   - `generate-blur-placeholder.ts` - Image blur placeholder generation
 - `/utils` - Utility functions
-  - `contentful-graphql.ts` - Contentful GraphQL integration
+  - `imagekit-fetches.ts` - ImageKit API integration
+  - `instagram-api.ts` - Instagram feed integration (no token required)
 
 ## Key Configuration
 
@@ -81,24 +82,26 @@ yarn lint
 
 ### Image Handling
 
-- Custom Contentful image loader with WebP optimization
+- Custom ImageKit loader with WebP optimization and transformations
 - Blur placeholders using @plaiceholder/next
-- Images served from `images.ctfassets.net`
+- Images served from ImageKit CDN (`ik.imagekit.io`)
 
 ### Environment Variables
 
-The project requires Contentful API configuration:
+The project requires ImageKit configuration:
 
-- `NEXT_PUBLIC_CONTENTFUL_SPACE_ID`
-- `NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN`
+- `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT` - ImageKit CDN endpoint
+- `IMAGEKIT_PRIVATE_KEY` - For server-side operations
+- `IMAGEKIT_PUBLIC_KEY` - For client-side operations
+- `NEXT_PUBLIC_INSTAGRAM_USERNAME` - Instagram username for feed (optional)
 
 ## Content Management
 
-The site uses Contentful's GraphQL API for content delivery. Key content types include:
+The site uses ImageKit for image storage and serves content through:
 
-- Photography Series (`photographySeriesCollection`)
-- Individual photos with metadata
-- Project information
+- Photography galleries from ImageKit storage with metadata
+- Instagram feed integration via RSS (no token required)
+- Automatic image optimization and WebP conversion
 
 ## Build Configuration
 

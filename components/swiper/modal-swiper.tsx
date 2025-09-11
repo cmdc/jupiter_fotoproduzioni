@@ -50,7 +50,6 @@ function ModalSwiper({ images, idc, show }: Props) {
             "--swiper-navigation-size": "24px",
           }}
           onSlideChange={(swiper) => {
-            console.log(swiper.activeIndex);
             // const currentSlideElement = swiper.slides[swiper.activeIndex];
             // const currentSlideId = currentSlideElement.getAttribute("data-id");
             changeRoute(Number(swiper.activeIndex));
@@ -88,6 +87,7 @@ function ModalSwiper({ images, idc, show }: Props) {
                       placeholder="blur"
                       priority
                       alt={image.alt}
+                      unoptimized={image.src.startsWith('/api/proxy-image') || image.src.includes('ik.imagekit.io')}
                       // onLoadingComplete={() => setLoaded(true)}
                     />
                   </div>
@@ -159,7 +159,7 @@ function ModalSwiper({ images, idc, show }: Props) {
                   <div className="w-full h-full ">
                     <button
                       className="flex w-full h-full items-center justify-center rounded-lg"
-                      onClick={() => console.log("clicked")}
+                      onClick={() => {}}
                       aria-label={`View thumbnail: ${image.alt}`}
                       title={`View thumbnail: ${image.alt}`}
                     >
@@ -174,6 +174,7 @@ function ModalSwiper({ images, idc, show }: Props) {
                         className={tm(
                           "block object-cover w-full h-full rounded-lg"
                         )}
+                        unoptimized={image.src.startsWith('/api/proxy-image') || image.src.includes('ik.imagekit.io')}
                       />
                     </button>
                   </div>

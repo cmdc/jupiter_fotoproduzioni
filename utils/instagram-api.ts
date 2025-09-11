@@ -33,17 +33,21 @@ async function fetchFromRSSBridge(): Promise<RSSInstagramPost[]> {
       method: "GET",
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; InstagramFeed/1.0)",
+        Accept: "application/json",
       },
+      // Add timeout and other fetch options for better reliability
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
 
     if (!response.ok) {
-      throw new Error(`RSS Bridge error: ${response.status}`);
+      throw new Error(
+        `RSS Bridge error: ${response.status} ${response.statusText}`
+      );
     }
 
     const data = await response.json();
     return Array.isArray(data.items) ? data.items : [];
   } catch (error) {
-    console.warn("RSS Bridge failed:", error);
     throw error;
   }
 }
@@ -66,7 +70,6 @@ async function fetchFromInstaRSS(): Promise<RSSInstagramPost[]> {
     const xmlText = await response.text();
     return parseRSSXML(xmlText);
   } catch (error) {
-    console.warn("InstaRSS failed:", error);
     throw error;
   }
 }
@@ -107,7 +110,6 @@ function parseRSSXML(xmlText: string): RSSInstagramPost[] {
       }
     }
   } catch (error) {
-    console.warn("RSS XML parsing failed:", error);
   }
 
   return posts.slice(0, 20); // Limit to 20 posts
@@ -122,14 +124,11 @@ async function fetchInstagramPosts(): Promise<RSSInstagramPost[]> {
 
   for (const service of services) {
     try {
-      console.log(`Trying ${service.name}...`);
       const posts = await service.fetch();
       if (posts && posts.length > 0) {
-        console.log(`Success with ${service.name}: ${posts.length} posts`);
         return posts;
       }
     } catch (error) {
-      console.warn(`${service.name} failed:`, error);
       continue;
     }
   }
@@ -152,6 +151,20 @@ function convertRSSPostToImageProps(
       .trim()
       .substring(0, 100) || `Instagram Post ${index + 1}`;
 
+  // Parse date
+  let postDate = new Date().toLocaleDateString("it-IT");
+  if (post.date_published) {
+    try {
+      postDate = new Date(post.date_published).toLocaleDateString("it-IT");
+    } catch (e) {
+      // Keep default date if parsing fails
+    }
+  }
+
+  // Generate varied dimensions for organic masonry look
+  const heights = [300, 400, 350, 500, 280, 450, 320, 380, 600, 250];
+  const widths = [400, 400, 400, 400, 400, 400, 400, 400, 400, 400]; // Keep width consistent
+
   // Extract image URL from various possible fields
   let imageUrl = post.image || "";
 
@@ -167,29 +180,22 @@ function convertRSSPostToImageProps(
     imageUrl = imgMatch?.[1] || "";
   }
 
-  // Parse date
-  let postDate = new Date().toLocaleDateString("it-IT");
-  if (post.date_published) {
-    try {
-      postDate = new Date(post.date_published).toLocaleDateString("it-IT");
-    } catch (e) {
-      // Keep default date if parsing fails
-    }
+  // Create proxy URL for Instagram images to bypass CORS
+  let finalImageUrl = imageUrl;
+  if (imageUrl && (imageUrl.includes('cdninstagram.com') || imageUrl.includes('instagram.com'))) {
+    // Use our proxy API route to serve the Instagram image
+    finalImageUrl = `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`;
   }
-
-  // Generate varied dimensions for organic masonry look
-  const heights = [300, 400, 350, 500, 280, 450, 320, 380, 600, 250];
-  const widths = [400, 400, 400, 400, 400, 400, 400, 400, 400, 400]; // Keep width consistent
 
   return {
     id: index,
-    idc: post.id || `rss-post-${index}`,
+    idc: post.id || `instagram-post-${index}`,
     height: heights[index % heights.length],
     width: widths[index % widths.length],
-    src: imageUrl,
-    alt: cleanCaption,
+    src: finalImageUrl,
+    alt: `${cleanCaption} - @brunol.35ml`,
     date: postDate,
-    tags: ["instagram", "feed", "rss"],
+    tags: ["instagram", "brunol.35ml", "feed"],
     blurDataURL: undefined, // Skip blur generation for RSS images
   };
 }
@@ -201,71 +207,54 @@ export async function getInstagramFeed(): Promise<ImageProps[]> {
     return cachedData;
   }
 
+
+  try {
+    const posts = await fetchInstagramPosts();
+    if (posts && posts.length > 0) {
+
+      // Convert RSS posts to ImageProps
+      const images = posts.map((post, index) =>
+        convertRSSPostToImageProps(post, index)
+      );
+
+      // Cache the result
+      cachedData = images;
+      cacheTimestamp = now;
+
+      return images;
+    } else {
+    }
+  } catch (error) {
+  }
+
+  // Fallback to mock data if all services fail
   return getMockInstagramFeed();
 }
 
 // Mock data for development/fallback
 function getMockInstagramFeed(): ImageProps[] {
-  return [
-    {
-      id: 0,
-      idc: "mock-1",
-      height: 600,
-      width: 600,
-      src: "https://picsum.photos/600/600?random=1",
-      alt: "Mock Instagram post 1",
-      date: new Date().toLocaleDateString("it-IT"),
-      tags: ["instagram", "mock"],
-    },
-    {
-      id: 1,
-      idc: "mock-2",
-      height: 600,
-      width: 400,
-      src: "https://picsum.photos/600/400?random=2",
-      alt: "Mock Instagram post 2",
-      date: new Date().toLocaleDateString("it-IT"),
-      tags: ["instagram", "mock"],
-    },
-    {
-      id: 2,
-      idc: "mock-3",
-      height: 800,
-      width: 600,
-      src: "https://picsum.photos/600/800?random=3",
-      alt: "Mock Instagram post 3",
-      date: new Date().toLocaleDateString("it-IT"),
-      tags: ["instagram", "mock"],
-    },
-    {
-      id: 3,
-      idc: "mock-4",
-      height: 500,
-      width: 600,
-      src: "https://picsum.photos/600/500?random=4",
-      alt: "Mock Instagram post 4",
-      date: new Date().toLocaleDateString("it-IT"),
-      tags: ["instagram", "mock"],
-    },
-    {
-      id: 4,
-      idc: "mock-5",
-      height: 700,
-      width: 600,
-      src: "https://picsum.photos/600/700?random=5",
-      alt: "Mock Instagram post 5",
-      date: new Date().toLocaleDateString("it-IT"),
-      tags: ["instagram", "mock"],
-    },
-    {
-      id: 5,
-      idc: "mock-6",
-      height: 600,
-      width: 600,
-      src: "https://picsum.photos/600/600?random=6",
-      alt: "Mock Instagram post 6",
-      date: new Date().toLocaleDateString("it-IT"),
-      tags: ["instagram", "mock"],
-    },
+  // Use more reliable image sources that work better with Next.js and ImageKit
+  const baseUrl = "https://images.unsplash.com";
+  const mockImages = [
+    { w: 600, h: 400, id: "photo-1544005313-94ddf0286df2?" }, // Portrait
+    { w: 400, h: 600, id: "photo-1517849845537-4d257902454a" }, // Dog portrait
+    { w: 600, h: 600, id: "photo-1529390079861-591de354faf5" }, // Square nature
+    { w: 500, h: 700, id: "photo-1441986300917-64674bd600d8" }, // Street photo
+    { w: 600, h: 400, id: "photo-1502657877623-f66bf489d236" }, // Landscape
+    { w: 600, h: 800, id: "photo-1549388604-817d15aa0110" }, // Portrait
   ];
+
+  return mockImages.map((img, index) => ({
+    id: index,
+    idc: `mock-${index + 1}`,
+    height: img.h,
+    width: img.w,
+    src: `${baseUrl}/${img.id}?w=${img.w}&h=${img.h}&fit=crop&crop=center`,
+    alt: `Mock Instagram post ${
+      index + 1
+    } - Esempio contenuto dal feed @brunol.35ml`,
+    date: new Date().toLocaleDateString("it-IT"),
+    tags: ["instagram", "mock"],
+    blurDataURL: undefined,
+  }));
 }

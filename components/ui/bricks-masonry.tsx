@@ -46,21 +46,28 @@ export default function BricksMasonry({ images }: BricksMasonryProps) {
     <div className="w-full">
       {/* Mobile: Simple vertical layout */}
       <div className="md:hidden space-y-1">
-        {images.map((image, index) => (
-          <Link key={image.idc} href={`/photography/${image.idc}`}>
+        {images.map((image, index) => {
+          const isInstagramPost = image.idc.startsWith('https://www.instagram.com/');
+          const linkProps = isInstagramPost 
+            ? { href: image.idc, target: "_blank", rel: "noopener noreferrer" }
+            : { href: `/photography/${image.idc}` };
+          
+          return (
+          <Link key={image.idc} {...linkProps}>
             <div 
               className="relative overflow-hidden hover:scale-[1.01] transition-transform duration-300"
             >
               <Image
                 src={image.src}
                 alt={image.alt}
-                width={0}
-                height={0}
+                width={image.width}
+                height={image.height}
                 className="w-full h-auto object-contain"
                 placeholder={image.blurDataURL ? "blur" : "empty"}
                 blurDataURL={image.blurDataURL}
                 priority={index < 4}
                 sizes="100vw"
+                unoptimized={image.src.startsWith('/api/proxy-image') || image.src.includes('ik.imagekit.io')}
               />
               
               {/* Hover overlay */}
@@ -71,7 +78,8 @@ export default function BricksMasonry({ images }: BricksMasonryProps) {
               </div>
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
 
       {/* Desktop: Row-based layout with organic masonry within each row */}
@@ -85,11 +93,15 @@ export default function BricksMasonry({ images }: BricksMasonryProps) {
               const globalIndex = imageRows.slice(0, rowIndex).flat().length + imageIndex;
               const height = getRandomHeight(globalIndex);
               const widthPercentage = 100 / row.length; // Equal width distribution
+              const isInstagramPost = image.idc.startsWith('https://www.instagram.com/');
+              const linkProps = isInstagramPost 
+                ? { href: image.idc, target: "_blank", rel: "noopener noreferrer" }
+                : { href: `/photography/${image.idc}` };
               
               return (
                 <Link 
                   key={image.idc} 
-                  href={`/photography/${image.idc}`}
+                  {...linkProps}
                   style={{ width: `${widthPercentage}%` }}
                 >
                   <div 
@@ -98,13 +110,14 @@ export default function BricksMasonry({ images }: BricksMasonryProps) {
                     <Image
                       src={image.src}
                       alt={image.alt}
-                      width={0}
-                      height={0}
+                      width={image.width}
+                      height={image.height}
                       className="w-full h-auto object-contain"
                       placeholder={image.blurDataURL ? "blur" : "empty"}
                       blurDataURL={image.blurDataURL}
                       priority={globalIndex < 8}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      unoptimized={image.src.startsWith('/api/proxy-image') || image.src.includes('ik.imagekit.io')}
                     />
                     
                     {/* Hover overlay */}

@@ -15,7 +15,23 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "images.ctfassets.net", // Legacy support
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
+      {
+        protocol: "https",
+        hostname: "scontent.cdninstagram.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.cdninstagram.com",
       },
     ],
     loader: "custom",

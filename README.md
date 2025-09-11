@@ -8,9 +8,9 @@ account cmdc.business@gmail.com
 
 # TODO
 
-Elimina la pagina photo-series e tutti i componenti o metodi non usati in tutto il progetto.
-E crea una pagina chiamata Feed prendendo feed di instagram e mostralo in una griglia crea una pagina apposta che visualizza come photography le immagini prese da instagram del account brunol.35ml
+Elimina riga sotto l'header
 
+Aspetta testi giusti!
 
 Verifica indicizzazione, sito!
 
