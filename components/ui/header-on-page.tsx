@@ -39,7 +39,7 @@ export async function Header({
             </p>
           )}
           <div className="text-center select-none">
-            <h1 className="text-4xl font-bold tracking-tight py-4 border-b mb-5 sm:text-6xl select-none">
+            <h1 className="text-4xl font-bold tracking-tight py-4 mb-5 sm:text-6xl select-none">
               {/* <AnimatedText text={title} once /> */}
               {title}
             </h1>

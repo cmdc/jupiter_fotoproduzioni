@@ -101,7 +101,7 @@ const RootLayout: FC<RootLayoutProps> = ({ children, modal }) => {
           <Particles className="absolute inset-0 -z-10" />
           {children}
 
-          <div className="text-center bottom-3 text-xs md:text-normal left-0 opacity-60 right-0 m-auto w-5/6 md:w-1/2  scroll-m-20 p-5 pt-10 text-md  tracking-tight transition-colors first:mt-0 select-none flex flex-col items-center lg:justify-center">
+          <div className="text-center bottom-2 -z-10 text-xs md:text-normal left-0 opacity-60 right-0 m-auto w-5/6 md:w-1/2  scroll-m-20 p-5 pt-10 text-md  tracking-tight transition-colors first:mt-0 select-none flex flex-col items-center lg:justify-center">
             <Link
               className="flex items-center gap-1 text-current text-sm"
               href="http://cmdc.it"
