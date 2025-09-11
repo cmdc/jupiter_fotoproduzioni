@@ -8,7 +8,7 @@ account cmdc.business@gmail.com
 
 # TODO
 
-Aggiungi nella pagina about il form di contatto con il submit delle email... (copia da bio-2) 
+prendi il feed di instagram e mostralo e crea una pagina apposta che visualizza come photography le immagini prese da instagram del account brunol.35ml
 
 il caricamento delle foto potrebbe essere "statico" pero poi deve fare il deploy ...
 

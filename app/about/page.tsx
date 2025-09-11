@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { Header } from "@/components/ui/header-on-page";
 import Link from "next/link";
-import { getAPhoto } from "@/utils/imagekit-fetches";
+import { getAPhoto, getPhotoByName } from "@/utils/imagekit-fetches";
 import AnimationWrapper from "@/components/ui/animation-wrapper";
 import { ContactForm } from "@/components/ui/contact-form";
 import { Separator } from "@/components/ui/separator";
@@ -11,10 +11,12 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Chi sono",
-  description: "Luigi Bruno, fotografo professionista specializzato in matrimoni e eventi a Potenza e Satriano di Lucania. Scopri la mia storia e il mio approccio alla fotografia.",
+  description:
+    "Luigi Bruno, fotografo professionista specializzato in matrimoni e eventi a Potenza e Satriano di Lucania. Scopri la mia storia e il mio approccio alla fotografia.",
   openGraph: {
     title: "Luigi Bruno - Chi sono | Fotografo Matrimoni Basilicata",
-    description: "Conosci Luigi Bruno, fotografo specializzato in matrimoni e eventi in Basilicata. La mia passione per catturare emozioni autentiche e momenti unici.",
+    description:
+      "Conosci Luigi Bruno, fotografo specializzato in matrimoni e eventi in Basilicata. La mia passione per catturare emozioni autentiche e momenti unici.",
   },
 };
 
@@ -23,27 +25,25 @@ type Props = {};
 async function Page({}: Props) {
   let data;
 
-  // Check if ImageKit credentials are configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
+  try {
+    //https: data = await getAPhoto("68c284955c7cd75eb8422216");
+    data = await getPhotoByName("contatto.jpg");
+  } catch (error) {
+    console.warn("Failed to load photo for about page:", error);
     data = null;
-  } else {
-    try {
-      data = await getAPhoto("2Lk8gJFapmsaug9WrFV7jW");
-    } catch (error) {
-      console.warn("Failed to load photo for about page:", error);
-      data = null;
-    }
   }
+
   // About page should have my image and a short description of me with some links to my socials
   return (
     <AnimationWrapper>
       <Header
         title={"👋 Ciao, sono Luigi Bruno"}
-        subtitle={"Fotografo professionista specializzato in matrimoni e eventi"}
-        subtitle2={"Catturando emozioni autentiche a Potenza, Satriano di Lucania e tutta la Basilicata"}
+        subtitle={
+          "Fotografo professionista specializzato in matrimoni e eventi"
+        }
+        subtitle2={
+          "Catturando emozioni autentiche a Potenza, Satriano di Lucania e tutta la Basilicata"
+        }
         image={data || undefined}
       />
 
@@ -197,46 +197,88 @@ async function Page({}: Props) {
             Pronto per il tuo evento speciale?
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto select-none">
-            Ogni matrimonio, ogni celebrazione ha una storia unica da raccontare. 
-            Condividi con me i dettagli del tuo evento e creeremo insieme ricordi indimenticabili.
+            Ogni matrimonio, ogni celebrazione ha una storia unica da
+            raccontare. Condividi con me i dettagli del tuo evento e creeremo
+            insieme ricordi indimenticabili.
           </p>
         </div>
-        
+
         <div id="contact-form">
           <ContactForm />
         </div>
-        
+
         <div className="text-center mt-12 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
               <h3 className="font-semibold select-none">Risposta Veloce</h3>
-              <p className="text-sm text-muted-foreground select-none">Ti rispondo entro 24 ore</p>
+              <p className="text-sm text-muted-foreground select-none">
+                Ti rispondo entro 24 ore
+              </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <h3 className="font-semibold select-none">Consulenza Gratuita</h3>
-              <p className="text-sm text-muted-foreground select-none">Prima consulenza senza impegno</p>
+              <p className="text-sm text-muted-foreground select-none">
+                Prima consulenza senza impegno
+              </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               </div>
               <h3 className="font-semibold select-none">Tutta la Basilicata</h3>
-              <p className="text-sm text-muted-foreground select-none">Servizi in tutta la regione</p>
+              <p className="text-sm text-muted-foreground select-none">
+                Servizi in tutta la regione
+              </p>
             </div>
           </div>
 
@@ -247,7 +289,6 @@ async function Page({}: Props) {
           </div>
         </div>
       </div>
-
     </AnimationWrapper>
   );
 }

@@ -17,17 +17,6 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { seriesId } = params;
 
-  // Skip metadata generation if ImageKit credentials are not configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
-    return {
-      title: `Photo Series | ${seriesId}`,
-      description: "Photography series",
-    };
-  }
-
   try {
     const data_ = await getPhotoSeries();
     const data = data_.props.images.filter(
@@ -67,14 +56,6 @@ export async function generateMetadata(
 }
 
 export async function generateStaticParams() {
-  // Skip static generation if ImageKit credentials are not configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
-    return [];
-  }
-
   try {
     const data_ = await getPhotoSeries();
     const data = data_.props.images;
@@ -97,38 +78,6 @@ export async function generateStaticParams() {
 
 async function Page({ params }: Props) {
   const { seriesId } = params;
-
-  // Check if ImageKit credentials are configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
-    return (
-      <AnimationWrapper>
-        <Header
-          title="Photo Series"
-          subtitle="ImageKit configuration required"
-        />
-        <section className="py-24 md:mx-1 justify-self-center text-center select-none">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4 select-none">Configuration Required</h2>
-            <p className="text-muted-foreground select-none">
-              Please configure your ImageKit credentials in the .env file to
-              view photo series.
-            </p>
-            <div className="mt-6 text-sm text-muted-foreground select-none">
-              <p className="select-none">Required environment variables:</p>
-              <ul className="mt-2 space-y-1 select-none">
-                <li className="select-none">NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY</li>
-                <li className="select-none">NEXT_IMAGEKIT_PRIVATE_KEY</li>
-                <li className="select-none">NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      </AnimationWrapper>
-    );
-  }
 
   try {
     const data_ = await getPhotoSeries();
@@ -183,7 +132,9 @@ async function Page({ params }: Props) {
               <div className="md:block md:p-6 max-w-2xl min-w-lg py-4 select-none">
                 <p className="text-sm md:text-xl text-center text-foreground-muted md:text-muted-foreground line-clamp-3 select-none">
                   {image.alt} <br />
-                  {image.date && <span className="text-xs select-none">{image.date}</span>}
+                  {image.date && (
+                    <span className="text-xs select-none">{image.date}</span>
+                  )}
                 </p>
               </div>
             </div>
@@ -200,7 +151,9 @@ async function Page({ params }: Props) {
         <Header title="Photo Series" subtitle="Error loading content" />
         <section className="py-24 md:mx-1 justify-self-center text-center select-none">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4 select-none">Unable to Load Content</h2>
+            <h2 className="text-2xl font-bold mb-4 select-none">
+              Unable to Load Content
+            </h2>
             <p className="text-muted-foreground select-none">
               There was an error loading the photo series. Please check your
               ImageKit configuration.

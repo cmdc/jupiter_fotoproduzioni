@@ -11,46 +11,16 @@ type Props = {};
 
 export const metadata: Metadata = {
   title: "Serie Fotografiche",
-  description: "Collezioni fotografiche tematiche di Luigi Bruno. Progetti matrimoniali, eventi speciali e servizi fotografici organizzati per raccontare storie complete attraverso le immagini.",
+  description:
+    "Collezioni fotografiche tematiche di Luigi Bruno. Progetti matrimoniali, eventi speciali e servizi fotografici organizzati per raccontare storie complete attraverso le immagini.",
   openGraph: {
     title: "Serie Fotografiche | Luigi Bruno Fotografo Matrimoni",
-    description: "Esplora le serie fotografiche di Luigi Bruno. Progetti completi di matrimoni e eventi in Basilicata, raccontati attraverso collezioni di immagini curate.",
+    description:
+      "Esplora le serie fotografiche di Luigi Bruno. Progetti completi di matrimoni e eventi in Basilicata, raccontati attraverso collezioni di immagini curate.",
   },
 };
 
 const Page = async (props: Props) => {
-  // Check if ImageKit credentials are configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
-    return (
-      <AnimationWrapper>
-        <Header
-          title="Photo Series"
-          subtitle="ImageKit configuration required"
-        />
-        <section className="py-24 md:mx-1 justify-self-center text-center select-none">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4 select-none">Configuration Required</h2>
-            <p className="text-muted-foreground select-none">
-              Please configure your ImageKit credentials in the .env file to
-              view photo series.
-            </p>
-            <div className="mt-6 text-sm text-muted-foreground select-none">
-              <p className="select-none">Required environment variables:</p>
-              <ul className="mt-2 space-y-1 select-none">
-                <li className="select-none">NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY</li>
-                <li className="select-none">NEXT_IMAGEKIT_PRIVATE_KEY</li>
-                <li className="select-none">NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      </AnimationWrapper>
-    );
-  }
-
   try {
     const data = await getPhotoSeries();
     return (
@@ -130,7 +100,9 @@ const Page = async (props: Props) => {
         <Header title="Photo Series" subtitle="Error loading content" />
         <section className="py-24 md:mx-1 justify-self-center text-center select-none">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4 select-none">Unable to Load Content</h2>
+            <h2 className="text-2xl font-bold mb-4 select-none">
+              Unable to Load Content
+            </h2>
             <p className="text-muted-foreground select-none">
               There was an error loading the photo series. Please check your
               ImageKit configuration.

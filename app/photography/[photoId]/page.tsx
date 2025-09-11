@@ -20,16 +20,6 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { photoId } = params;
 
-  // Skip metadata generation if ImageKit credentials are not configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
-    return {
-      title: `Photograph | ${photoId}`,
-    };
-  }
-
   try {
     var data = await getDataPhotographs();
     var alt = data.props.images
@@ -49,14 +39,6 @@ export async function generateMetadata(
 }
 
 export async function generateStaticParams() {
-  // Skip static generation if ImageKit credentials are not configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
-    return [];
-  }
-
   try {
     const dataAll = await getDataPhotographs();
     const data = dataAll.props.images;
@@ -75,34 +57,6 @@ export async function generateStaticParams() {
 
 async function Page({ params }: Props) {
   var idc = params.photoId;
-
-  // Check if ImageKit credentials are configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
-    return (
-      <AnimationWrapper>
-        <div className="py-24 text-center">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Configuration Required</h2>
-            <p className="text-muted-foreground">
-              Please configure your ImageKit credentials in the .env file to
-              view photographs.
-            </p>
-            <div className="mt-6 text-sm text-muted-foreground">
-              <p>Required environment variables:</p>
-              <ul className="mt-2 space-y-1">
-                <li>NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY</li>
-                <li>NEXT_IMAGEKIT_PRIVATE_KEY</li>
-                <li>NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </AnimationWrapper>
-    );
-  }
 
   try {
     var data = await getDataPhotographs();

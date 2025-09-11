@@ -4,7 +4,6 @@ import { Header } from "@/components/ui/header-on-page";
 import { getDataPhotographs } from "@/utils/imagekit-fetches";
 import { ImageProps } from "@/utils/types";
 import { Metadata } from "next";
-import Image from "next/image";
 
 type Props = {};
 
@@ -14,47 +13,12 @@ export const metadata: Metadata = {
     "Scopri il portfolio fotografico di Luigi Bruno. Galleria di immagini professionali che catturano emozioni, momenti speciali e la bellezza della Basilicata.",
   openGraph: {
     title: "Portfolio Fotografico | Luigi Bruno Fotografo Basilicata",
-    description: "Esplora la galleria fotografica di Luigi Bruno. Immagini professionali che raccontano storie e catturano la bellezza dei momenti più preziosi.",
+    description:
+      "Esplora la galleria fotografica di Luigi Bruno. Immagini professionali che raccontano storie e catturano la bellezza dei momenti più preziosi.",
   },
 };
 
 export default async function Page({}: Props) {
-  // Check if ImageKit credentials are configured
-  if (
-    !process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY ||
-    process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY === "your-imagekit-public-key"
-  ) {
-    return (
-      <AnimationWrapper>
-        <div>
-          <Header
-            title="Photography"
-            subtitle="ImageKit configuration required"
-          />
-          <section className="py-24 text-center select-none">
-            <div className="max-w-2xl mx-auto">
-              <h2 className="text-2xl font-bold mb-4 select-none">
-                Configuration Required
-              </h2>
-              <p className="text-muted-foreground select-none">
-                Please configure your ImageKit credentials in the .env file to
-                view photographs.
-              </p>
-              <div className="mt-6 text-sm text-muted-foreground select-none">
-                <p className="select-none">Required environment variables:</p>
-                <ul className="mt-2 space-y-1 select-none">
-                  <li className="select-none">NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY</li>
-                  <li className="select-none">NEXT_IMAGEKIT_PRIVATE_KEY</li>
-                  <li className="select-none">NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-        </div>
-      </AnimationWrapper>
-    );
-  }
-
   try {
     const data = await getDataPhotographs();
     return (

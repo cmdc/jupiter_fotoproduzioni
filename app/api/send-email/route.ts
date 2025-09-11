@@ -24,13 +24,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Create transporter (configure with your email service)
+    const smtpPort = parseInt(process.env.NEXT_SMTP_PORT || "587");
     const transporter = nodemailer.createTransport({
       host: process.env.NEXT_SMTP_HOST || "smtp.gmail.com",
-      port: parseInt(process.env.NEXT_SMTP_PORT || "587"),
-      secure: false, // true for 465, false for other ports
+      port: smtpPort,
+      secure: smtpPort === 465, // true for 465 (SSL), false for other ports (STARTTLS)
       auth: {
         user: process.env.NEXT_SMTP_USER,
         pass: process.env.NEXT_SMTP_PASS,
+      },
+      // Additional SSL/TLS options for better compatibility
+      tls: {
+        rejectUnauthorized: false, // Useful for self-signed certificates
       },
     });
 
