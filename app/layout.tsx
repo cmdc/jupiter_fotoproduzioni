@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Courier_Prime } from "next/font/google";
-//import localFont from "next/font/local";
 import type { ReactNode, FC } from "react";
 import Menu from "@/components/ui/menu";
 import { Particles } from "@/components/particles";
@@ -11,52 +10,28 @@ import Link from "next/link";
 import { CookieConsentBanner } from "@/components/ui/cookie-consent-banner";
 import { StructuredData } from "@/components/structured-data";
 
-const courierFont = Courier_Prime({ 
+const courierFont = Courier_Prime({
   subsets: ["latin"],
   weight: ["400", "700"],
-  style: ["normal", "italic"]
+  style: ["normal", "italic"],
 });
-// const courierFont = localFont({
-//   src: [
-//     {
-//       path: '../public/fonts/courier-normal.ttf',
-//       weight: '400',
-//       style: 'normal',
-//     },
-//     {
-//       path: '../public/fonts/courier-italic.ttf',
-//       weight: '400',
-//       style: 'italic',
-//     },
-//     {
-//       path: '../public/fonts/courier-bold.ttf',
-//       weight: '700',
-//       style: 'normal',
-//     },
-//     {
-//       path: '../public/fonts/courier-bolditalic.ttf',
-//       weight: '700',
-//       style: 'italic',
-//     },
-//   ],
-//   variable: '--font-courier',
-// });
 
 export const metadata: Metadata = {
   title: {
     template: "Luigi Bruno Fotografo | %s",
     default: "Luigi Bruno Fotografo - Matrimoni e Eventi in Basilicata",
   },
-  description: "Luigi Bruno, fotografo professionista specializzato in matrimoni e eventi a Potenza, Satriano di Lucania e tutta la Basilicata. Servizi fotografici di alta qualità per i tuoi momenti speciali.",
+  description:
+    "Luigi Bruno, fotografo professionista specializzato in matrimoni e eventi a Potenza, Satriano di Lucania e tutta la Basilicata. Servizi fotografici di alta qualità per i tuoi momenti speciali.",
   keywords: [
     "fotografo matrimoni Basilicata",
     "fotografo Potenza",
-    "fotografo eventi Satriano di Lucania", 
+    "fotografo eventi Satriano di Lucania",
     "Luigi Bruno fotografo",
     "matrimoni Basilicata",
     "servizi fotografici Potenza",
     "fotografo professionista",
-    "eventi speciali Basilicata"
+    "eventi speciali Basilicata",
   ],
   authors: [{ name: "Luigi Bruno" }],
   creator: "Luigi Bruno",
@@ -66,31 +41,35 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://jupiterfoto.it'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://jupiterfoto.it"
+  ),
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
   openGraph: {
     title: "Luigi Bruno Fotografo - Matrimoni e Eventi in Basilicata",
-    description: "Fotografo professionista specializzato in matrimoni e eventi a Potenza e Satriano di Lucania. Cattura i tuoi momenti più preziosi con stile e professionalità.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://jupiterfoto.it',
+    description:
+      "Fotografo professionista specializzato in matrimoni e eventi a Potenza e Satriano di Lucania. Cattura i tuoi momenti più preziosi con stile e professionalità.",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://jupiterfoto.it",
     siteName: "Luigi Bruno Fotografo",
     images: [
       {
-        url: '/logo.png',
+        url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: 'Luigi Bruno Fotografo - Matrimoni e Eventi in Basilicata',
+        alt: "Luigi Bruno Fotografo - Matrimoni e Eventi in Basilicata",
       },
     ],
-    locale: 'it_IT',
-    type: 'website',
+    locale: "it_IT",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: "Luigi Bruno Fotografo - Matrimoni e Eventi in Basilicata",
-    description: "Fotografo professionista specializzato in matrimoni e eventi a Potenza e Satriano di Lucania.",
-    images: ['/logo.png'],
+    description:
+      "Fotografo professionista specializzato in matrimoni e eventi a Potenza e Satriano di Lucania.",
+    images: ["/logo.png"],
   },
   robots: {
     index: true,
@@ -98,9 +77,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   verification: {

@@ -18,7 +18,7 @@ export default function MenuElements({
   const pathname = usePathname();
 
   const navigation = [
-    { name: "Photo-Series", href: "/photo-series" },
+    { name: "Feed", href: "/feed" },
     { name: "Photography", href: "/photography" },
     { name: "About", href: "/about" },
   ];

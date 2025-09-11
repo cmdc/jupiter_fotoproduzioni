@@ -75,7 +75,7 @@ function ModalSwiper({ images, idc, show }: Props) {
             <SwiperSlide key={index} data-id={image.id}>
               {({ isActive }) => (
                 <div className="flex flex-col w-full items-center justify-center">
-                  <h2 className="mx-auto mb-5">{image.alt}</h2>
+                  <h2 className="mx-auto mb-5">{image.alt?.replace(/\.\w+$/, '')}</h2>
                   <div className="swiper-zoom-container">
                     <Image
                       src={image?.src}

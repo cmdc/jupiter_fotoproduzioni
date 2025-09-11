@@ -1,5 +1,5 @@
 import { imagekit, imagekitClient } from "./imagekit-client";
-import { ImageProps, ImageSeriesProps } from "./types";
+import { ImageProps } from "./types";
 import getBase64ImageUrl from "@/lib/generate-blur-placeholder";
 
 // Helper function to create slug from title
@@ -69,6 +69,7 @@ async function processImages(files: any[]) {
           file.customMetadata?.date ||
           new Date(file.createdAt).toLocaleDateString(),
         blurDataURL,
+        tags: file.tags || [],
       });
     } catch (error) {
       console.warn(`Failed to generate blur for ${file.name}:`, error);
@@ -83,6 +84,7 @@ async function processImages(files: any[]) {
           file.customMetadata?.date ||
           new Date(file.createdAt).toLocaleDateString(),
         blurDataURL: undefined,
+        tags: file.tags || [],
       });
     }
   }
@@ -195,175 +197,6 @@ export async function getPhotoByName(name: string) {
   }
 }
 
-// Get photo series (from series folder and subfolders)
-export async function getPhotoSeries() {
-  try {
-    // Get all files from series folder
-    const seriesFiles = await getImageKitFilesFromFolder("/series/");
-
-    // Group files by their subfolder path
-    const seriesMap = new Map<string, any[]>();
-
-    seriesFiles.forEach((file: any) => {
-      // Extract series name from file path (e.g., /series/nature/photo1.jpg -> nature)
-      const pathParts = file.filePath.split("/");
-      if (pathParts.length >= 3 && pathParts[1] === "series") {
-        const seriesName = pathParts[2]; // Get the immediate subfolder name
-        if (!seriesMap.has(seriesName)) {
-          seriesMap.set(seriesName, []);
-        }
-        seriesMap.get(seriesName)?.push(file);
-      }
-    });
-
-    const seriesResults: ImageSeriesProps[] = [];
-    let seriesIndex = 0;
-
-    for (const [seriesName, files] of Array.from(seriesMap.entries())) {
-      if (files.length === 0) continue;
-      // Process images in series
-      const seriesImages = await processSeriesImages(files);
-
-      // Use first image as cover
-      const coverImage = files[0];
-      const coverImageUrl = imagekitClient.url({
-        path: coverImage.filePath,
-        transformation: [
-          {
-            width: 600,
-            height: 400,
-            crop: "maintain_ratio",
-            quality: 80,
-            format: "webp",
-          },
-        ],
-      });
-
-      const seriesTitle = coverImage.customMetadata?.seriesTitle || seriesName;
-      const description =
-        coverImage.customMetadata?.seriesDescription ||
-        `Photo series: ${seriesTitle}`;
-
-      // Generate blur data URL for cover image
-      let coverBlurDataURL;
-      try {
-        coverBlurDataURL = await getBase64ImageUrl(coverImageUrl);
-      } catch (error) {
-        console.warn(
-          `Failed to generate blur for series cover ${seriesName}:`,
-          error
-        );
-        coverBlurDataURL = undefined;
-      }
-
-      seriesResults.push({
-        id: seriesIndex,
-        idc: `series-${seriesIndex}`,
-        slug: createSlug(seriesTitle),
-        src: coverImageUrl,
-        seriesTitle,
-        description,
-        alt: seriesTitle,
-        date:
-          coverImage.customMetadata?.date ||
-          new Date(coverImage.createdAt).toLocaleDateString(),
-        blurDataURL: coverBlurDataURL,
-        images: seriesImages.props.images,
-      });
-
-      seriesIndex++;
-    }
-
-    return {
-      props: {
-        images: seriesResults,
-      },
-    };
-  } catch (error) {
-    console.error("Error in getPhotoSeries (folder-based):", error);
-    throw error;
-  }
-}
-
-// Process images within a series
-async function processSeriesImages(files: any[]) {
-  let reducedResults: ImageProps[] = [];
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const imageUrl = imagekitClient.url({
-      path: file.filePath,
-      transformation: [
-        {
-          width: 1200,
-          quality: 90,
-          format: "webp",
-        },
-      ],
-    });
-
-    try {
-      const blurDataURL = await getBase64ImageUrl(imageUrl);
-
-      reducedResults.push({
-        id: i,
-        idc: file.fileId,
-        height: file.height || 800,
-        src: imageUrl,
-        width: file.width || 1200,
-        alt: String(
-          file.customMetadata?.alt || file.name || `Series photo ${i + 1}`
-        ),
-        date:
-          file.customMetadata?.date ||
-          new Date(file.createdAt).toLocaleDateString(),
-        blurDataURL,
-      });
-    } catch (error) {
-      console.warn(
-        `Failed to generate blur for series image ${file.name}:`,
-        error
-      );
-      reducedResults.push({
-        id: i,
-        idc: file.fileId,
-        height: file.height || 800,
-        src: imageUrl,
-        width: file.width || 1200,
-        alt: String(
-          file.customMetadata?.alt || file.name || `Series photo ${i + 1}`
-        ),
-        date:
-          file.customMetadata?.date ||
-          new Date(file.createdAt).toLocaleDateString(),
-        blurDataURL: undefined,
-      });
-    }
-  }
-
-  return {
-    props: {
-      images: reducedResults,
-    },
-  };
-}
-
-// Legacy compatibility - get a series by slug
-export async function getASeries(slug: string) {
-  const allSeries = await getPhotoSeries();
-  const series = allSeries.props.images.find(
-    (s: ImageSeriesProps) => s.slug === slug
-  );
-
-  if (!series) {
-    throw new Error(`Series not found: ${slug}`);
-  }
-
-  return {
-    reducedResults: series,
-    images: { props: { images: series.images || [] } },
-  };
-}
 
 // Get asset by entry ID (legacy compatibility)
 export async function getAnAsset(entityId: string) {

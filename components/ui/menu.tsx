@@ -12,7 +12,9 @@ export default function Menu() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className={`sticky inset-x-0 top-0 z-10 backdrop-blur-md `}>
+    <header
+      className={`sticky inset-x-0 top-0 z-[100] backdrop-blur-md !border-0`}
+    >
       <nav
         className="top-0 flex items-center justify-between p-2.5 lg:px-8"
         aria-label="Global"
@@ -50,7 +52,7 @@ export default function Menu() {
         onClose={setMobileMenuOpen}
       >
         <div className="fixed inset-0 z-50" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto px-6 py-6 sm:max-w-sm sm:ring-1 backdrop-blur-2xl transition-all duration-300 ease-in-out">
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto px-6 py-6 sm:max-w-sm backdrop-blur-2xl transition-all duration-300 ease-in-out">
           <div className="flex items-center justify-between">
             <Link
               href="/"

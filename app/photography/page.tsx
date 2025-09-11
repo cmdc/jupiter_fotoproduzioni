@@ -1,6 +1,6 @@
-import ImageContainer from "@/components/image-container";
 import AnimationWrapper from "@/components/ui/animation-wrapper";
 import { Header } from "@/components/ui/header-on-page";
+import BricksMasonry from "@/components/ui/bricks-masonry";
 import { getDataPhotographs } from "@/utils/imagekit-fetches";
 import { ImageProps } from "@/utils/types";
 import { Metadata } from "next";
@@ -18,9 +18,46 @@ export const metadata: Metadata = {
   },
 };
 
+// Helper function to group images by tags
+function groupImagesByTags(images: ImageProps[]) {
+  const grouped: { [key: string]: ImageProps[] } = {};
+  const untagged: ImageProps[] = [];
+
+  images.forEach((image) => {
+    if (!image.tags || image.tags.length === 0) {
+      untagged.push(image);
+    } else {
+      // For each tag, add the image to that group
+      image.tags.forEach((tag) => {
+        // Filter out special display tags
+        if (!tag.startsWith("displayName:")) {
+          if (!grouped[tag]) {
+            grouped[tag] = [];
+          }
+          grouped[tag].push(image);
+        }
+      });
+    }
+  });
+
+  // If image has no regular tags, add to untagged
+  images.forEach((image) => {
+    const regularTags =
+      image.tags?.filter((tag) => !tag.startsWith("displayName:")) || [];
+    if (regularTags.length === 0 && !untagged.includes(image)) {
+      untagged.push(image);
+    }
+  });
+
+  return { grouped, untagged };
+}
+
 export default async function Page({}: Props) {
   try {
     const data = await getDataPhotographs();
+    const { grouped, untagged } = groupImagesByTags(data.props.images);
+    const taggedSections = Object.entries(grouped);
+
     return (
       <AnimationWrapper>
         <div>
@@ -28,16 +65,29 @@ export default async function Page({}: Props) {
             title="Portfolio Fotografico"
             subtitle="Momenti catturati nel tempo, emozioni che diventano arte attraverso l'obiettivo."
           />
-          <section className="grid md:grid-cols-gallery auto-rows-[5px] py-24 md:mx-1">
-            {data.props.images.map((image: ImageProps, index: number) => (
-              <ImageContainer
-                key={index}
-                image={image}
-                index={index}
-                href={""}
-              />
+
+          <div className="py-24 space-y-32">
+            {/* Tagged sections */}
+            {taggedSections.map(([tag, images]) => (
+              <section key={tag} className="px-4 md:px-8">
+                <div className="mb-8 text-center">
+                  <h2 className="text-3xl font-bold capitalize mb-2">{tag}</h2>
+                  <div className="w-24 h-0.5 bg-primary mx-auto"></div>
+                  <p className="text-muted-foreground mt-4">
+                    {images.length} foto
+                  </p>
+                </div>
+                <BricksMasonry images={images} />
+              </section>
             ))}
-          </section>
+
+            {/* Untagged images - scattered throughout without section header */}
+            {untagged.length > 0 && (
+              <section className="px-4 md:px-8 pt-24">
+                <BricksMasonry images={untagged} />
+              </section>
+            )}
+          </div>
         </div>
       </AnimationWrapper>
     );

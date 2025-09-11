@@ -8,13 +8,9 @@ account cmdc.business@gmail.com
 
 # TODO
 
-Pagina Admin, non funzionano vorrei vedere il contenuto del mio bucket di imagekit e lavorare su di esso, quindi vedere file e cartelle di NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/veujbln6y... e caricare su una cartella cancellare un file aggiungere un tag tutto relativo ai file del mio imagekit. 
+Elimina la pagina photo-series e tutti i componenti o metodi non usati in tutto il progetto.
+E crea una pagina chiamata Feed prendendo feed di instagram e mostralo in una griglia crea una pagina apposta che visualizza come photography le immagini prese da instagram del account brunol.35ml
 
-prendi il feed di instagram e mostralo e crea una pagina apposta che visualizza come photography le immagini prese da instagram del account brunol.35ml
-
-Unifica le pagine photo-series e photography
-
-Eliminare i file .ttf se si usa il fonts di google ed eliminare anche il commento in layout...
 
 Verifica indicizzazione, sito!
 

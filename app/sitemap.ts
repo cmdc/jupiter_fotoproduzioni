@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getDataPhotographs, getPhotoSeries } from '@/utils/imagekit-fetches'
+import { getDataPhotographs } from '@/utils/imagekit-fetches'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jupiterfoto.it'
@@ -25,9 +25,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/photo-series`,
+      url: `${baseUrl}/feed`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'daily',
       priority: 0.9,
     },
     {
@@ -48,16 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
 
-    // Get photo series pages
-    const seriesData = await getPhotoSeries()
-    const seriesPages = seriesData.props.images.map((series) => ({
-      url: `${baseUrl}/photo-series/${series.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }))
-
-    return [...staticPages, ...photographyPages, ...seriesPages]
+    return [...staticPages, ...photographyPages]
   } catch (error) {
     console.error('Error generating sitemap:', error)
     return staticPages

@@ -8,6 +8,7 @@ export interface ImageProps {
   placeholder?: string;
   alt: string;
   date?: string;
+  tags?: string[];
 }
 
 export interface SharedModalProps {
@@ -20,18 +21,3 @@ export interface SharedModalProps {
   direction?: number;
 }
 
-export interface ImageSeriesProps {
-  id: number;
-  idc: string;
-  height?: number;
-  width?: number;
-  blurDataURL: string | undefined;
-  src: string;
-  placeholder?: string;
-  alt: string;
-  date: string;
-  seriesTitle: string;
-  description: string;
-  slug: string;
-  images?: ImageProps[];
-}
