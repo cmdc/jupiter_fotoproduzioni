@@ -1,23 +1,23 @@
-import { getPlaiceholder } from "plaiceholder";
+// Disabled sharp/plaiceholder due to dependency issues
+// import { getPlaiceholder } from "plaiceholder";
 import type { ImageProps } from "../utils/types";
 
-const cache = new Map<ImageProps, string>();
+const cache = new Map<string, string>();
 
 export default async function getBase64ImageUrl(image: any): Promise<string> {
-  let url = cache.get(image);
+  // Create a simple key for caching
+  const imageKey = typeof image === 'string' ? image : String(image);
+  
+  let url = cache.get(imageKey);
   if (url) {
     return url;
   }
 
-  const blurDataURL = new URL(`https:${image}`);
-  blurDataURL.searchParams.set("fm", "jpg");
-  blurDataURL.searchParams.set("w", "100");
-  blurDataURL.searchParams.set("q", "30");
-
-  const buffer = await fetch(blurDataURL).then(async (res) =>
-    Buffer.from(await res.arrayBuffer())
-  );
-
-  const { base64 } = await getPlaiceholder(buffer);
-  return base64;
+  // Return a simple base64 placeholder instead of using sharp/plaiceholder
+  const placeholder = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyEH4Hdzj0eQQvkzQfhvKoLgq5kj0mzLTXJOiCOV5pAvoE9o5ypH2EQo60Q7A==";
+  
+  // Cache the result
+  cache.set(imageKey, placeholder);
+  
+  return placeholder;
 }
