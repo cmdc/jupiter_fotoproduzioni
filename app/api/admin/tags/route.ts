@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       file: {
-        id: updatedFile.fileId,
+        id: fileId,
         tags: updatedFile.tags,
         name: updatedFile.name,
         url: updatedFile.url,
@@ -78,7 +78,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       file: {
-        id: updatedFile.fileId,
+        id: fileId,
         tags: updatedTags, // Use our filtered tags instead of ImageKit's response
         name: updatedFile.name,
         url: updatedFile.url,

@@ -39,12 +39,20 @@ export async function GET(request: NextRequest) {
       const filePath = file.filePath || file.name || '';
       const folderPath = filePath ? filePath.split('/').slice(0, -1).join('/') || '/' : '/';
       
+      // Extract display name from tags if it exists
+      const tags = file.tags || [];
+      const displayNameTag = tags.find((tag: string) => tag.startsWith('displayName:'));
+      const displayName = displayNameTag ? displayNameTag.replace('displayName:', '') : null;
+      
+      // Filter out the displayName tag from visible tags
+      const visibleTags = tags.filter((tag: string) => !tag.startsWith('displayName:'));
+      
       return {
         id: file.fileId || file.folderId || Math.random().toString(36),
-        name: file.name || 'Unknown',
+        name: displayName || file.name || 'Unknown',
         url: file.url || '',
         size: file.size || 0,
-        tags: file.tags || [],
+        tags: visibleTags,
         folder: folderPath,
         uploadedAt: file.createdAt || new Date().toISOString(),
         type: file.type || 'file', // 'file' or 'folder'

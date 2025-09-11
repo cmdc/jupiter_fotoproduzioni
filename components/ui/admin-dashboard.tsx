@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Trash2, Upload, FolderOpen, Tag, X, Plus } from "lucide-react";
+import { Trash2, Upload, FolderOpen, Tag, X, Plus, Edit3 } from "lucide-react";
 
 interface ImageFile {
   id: string;
@@ -11,7 +11,7 @@ interface ImageFile {
   size: number;
   tags: string[];
   folder: string;
-  type: 'file' | 'folder';
+  type: "file" | "folder";
   filePath: string;
   width?: number;
   height?: number;
@@ -39,16 +39,21 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
   const [showTagModal, setShowTagModal] = useState(false);
   const [currentImageForTag, setCurrentImageForTag] = useState<string>("");
   const [newTag, setNewTag] = useState("");
+  const [showRenameModal, setShowRenameModal] = useState(false);
+  const [currentImageForRename, setCurrentImageForRename] =
+    useState<string>("");
+  const [newFileName, setNewFileName] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
+  const [isLoadingFiles, setIsLoadingFiles] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const createAuthHeaders = () => ({
-    'Authorization': `Bearer ${authToken}`,
-    'Content-Type': 'application/json',
+    Authorization: `Bearer ${authToken}`,
+    "Content-Type": "application/json",
   });
 
   const createFormDataAuthHeaders = () => ({
-    'Authorization': `Bearer ${authToken}`,
+    Authorization: `Bearer ${authToken}`,
   });
 
   useEffect(() => {
@@ -60,7 +65,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
 
   const loadImages = async (path: string = currentPath) => {
     try {
-      const params = new URLSearchParams({ path, limit: '100' });
+      const params = new URLSearchParams({ path, limit: "100" });
       const response = await fetch(`/api/admin/images?${params}`, {
         headers: createAuthHeaders(),
       });
@@ -68,7 +73,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
         const data = await response.json();
         setImages(data);
       } else if (response.status === 401) {
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem("adminToken");
         window.location.reload();
       }
     } catch (error) {
@@ -86,7 +91,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
         const data = await response.json();
         setFolders(data);
       } else if (response.status === 401) {
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem("adminToken");
         window.location.reload();
       }
     } catch (error) {
@@ -95,10 +100,15 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
   };
 
   const handleFolderChange = async (folderPath: string) => {
+    setIsLoadingFiles(true);
     setCurrentPath(folderPath);
     setSelectedFolder(folderPath);
-    await loadImages(folderPath);
-    await loadFolders(folderPath);
+    try {
+      await loadImages(folderPath);
+      await loadFolders(folderPath);
+    } finally {
+      setIsLoadingFiles(false);
+    }
   };
 
   const convertToWebP = async (file: File): Promise<File> => {
@@ -177,7 +187,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
           const result = await response.json();
           if (result.success && result.image) {
             // Aggiungi la nuova immagine allo stato
-            setImages(prevImages => [...prevImages, result.image]);
+            setImages((prevImages) => [...prevImages, result.image]);
           }
         } else {
           alert(`Errore nel caricamento di ${file.name}`);
@@ -208,8 +218,8 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
 
       if (response.ok) {
         // Rimuovi le immagini eliminate dallo stato
-        setImages(prevImages => 
-          prevImages.filter(img => !selectedImages.has(img.id))
+        setImages((prevImages) =>
+          prevImages.filter((img) => !selectedImages.has(img.id))
         );
         setSelectedImages(new Set());
       } else {
@@ -236,6 +246,58 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
     setShowTagModal(true);
   };
 
+  const openRenameModal = (imageId: string) => {
+    const image = images.find((img) => img.id === imageId);
+    if (image) {
+      setCurrentImageForRename(imageId);
+      setNewFileName(image.name);
+      setShowRenameModal(true);
+    }
+  };
+
+  const renameFile = async () => {
+    if (!newFileName.trim() || !currentImageForRename) return;
+
+    try {
+      const response = await fetch("/api/admin/rename", {
+        method: "PUT",
+        headers: createAuthHeaders(),
+        body: JSON.stringify({
+          fileId: currentImageForRename,
+          newName: newFileName.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.file) {
+          // Aggiorna l'immagine specifica con il nuovo nome e i tag aggiornati
+          setImages((prevImages) =>
+            prevImages.map((img) =>
+              img.id === currentImageForRename
+                ? {
+                    ...img,
+                    name: result.file.name,
+                    tags: result.file.tags.filter(
+                      (tag: string) => !tag.startsWith("displayName:")
+                    ),
+                  }
+                : img
+            )
+          );
+        }
+        setShowRenameModal(false);
+        setNewFileName("");
+        setCurrentImageForRename("");
+      } else {
+        alert("Errore nella rinomina del file");
+      }
+    } catch (error) {
+      console.error("Errore nella rinomina:", error);
+      alert("Errore nella rinomina del file");
+    }
+  };
+
   const addTag = async () => {
     if (!newTag.trim() || !currentImageForTag) return;
 
@@ -253,9 +315,9 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
         const result = await response.json();
         if (result.success && result.file) {
           // Aggiorna l'immagine specifica con i nuovi tag
-          setImages(prevImages => 
-            prevImages.map(img => 
-              img.id === currentImageForTag 
+          setImages((prevImages) =>
+            prevImages.map((img) =>
+              img.id === currentImageForTag
                 ? { ...img, tags: result.file.tags }
                 : img
             )
@@ -283,9 +345,9 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
         const result = await response.json();
         if (result.success && result.file) {
           // Aggiorna l'immagine specifica rimuovendo il tag
-          setImages(prevImages => 
-            prevImages.map(img => 
-              img.id === imageId 
+          setImages((prevImages) =>
+            prevImages.map((img) =>
+              img.id === imageId
                 ? { ...img, tags: result.file.tags || [] }
                 : img
             )
@@ -301,7 +363,12 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
   };
 
   const handleDeploy = async () => {
-    if (!confirm("Triggerare il deploy su Vercel? Vercel gestirà automaticamente build e deployment.")) return;
+    if (
+      !confirm(
+        "Triggerare il deploy su Vercel? Vercel gestirà automaticamente build e deployment."
+      )
+    )
+      return;
 
     setIsDeploying(true);
 
@@ -313,10 +380,19 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
 
       if (response.ok) {
         const data = await response.json();
-        alert(`✅ ${data.message}\n\n${data.info || 'Controlla la dashboard di Vercel per monitorare il progresso.'}`);
+        alert(
+          `✅ ${data.message}\n\n${
+            data.info ||
+            "Controlla la dashboard di Vercel per monitorare il progresso."
+          }`
+        );
       } else {
         const errorData = await response.json();
-        alert(`❌ ${errorData.message || 'Errore nel deploy'}\n\nDettagli: ${errorData.details || 'Errore sconosciuto'}`);
+        alert(
+          `❌ ${errorData.message || "Errore nel deploy"}\n\nDettagli: ${
+            errorData.details || "Errore sconosciuto"
+          }`
+        );
       }
     } catch (error) {
       console.error("Errore nel deploy:", error);
@@ -326,7 +402,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
     }
   };
 
-  const filteredImages = images.filter(img => img.type === 'file');
+  const filteredImages = images.filter((img) => img.type === "file");
 
   const currentImage = images.find((img) => img.id === currentImageForTag);
 
@@ -336,10 +412,10 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
         {/* Upload Section */}
-        <div className="rounded-lg shadow-md p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
+        <div className="rounded-lg shadow-md p-6 mb-8 md:p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <h2 className="text-xl font-semibold">Upload Immagini</h2>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -361,13 +437,21 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
               <button
                 onClick={handleDeploy}
                 disabled={isDeploying}
-                className={`inline-flex items-center px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 ${
+                className={`inline-flex items-center px-4 py-2 bg-black dark:border-gray-100 dark:border-2  text-white rounded-md hover:bg-gray-800 ${
                   isDeploying ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 title="Triggera deploy Vercel via webhook"
               >
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="m37.5274 0 36.6253 65H.89009L37.5274 0Z" fill="currentColor"/>
+                <svg
+                  className="w-4 h-4 mr-2"
+                  viewBox="0 0 76 65"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m37.5274 0 36.6253 65H.89009L37.5274 0Z"
+                    fill="currentColor"
+                  />
                 </svg>
                 {isDeploying ? "Deploying..." : "Deploy Vercel"}
               </button>
@@ -394,30 +478,37 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
             </button>
             {currentPath !== "/" && (
               <button
-                onClick={() => handleFolderChange(currentPath.split('/').slice(0, -1).join('/') || '/')}
+                onClick={() =>
+                  handleFolderChange(
+                    currentPath.split("/").slice(0, -1).join("/") || "/"
+                  )
+                }
                 className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-200 text-gray-700 hover:bg-gray-300"
               >
                 ← Indietro
               </button>
             )}
           </div>
-          
+
           {/* Current folder contents */}
           <div className="flex flex-wrap gap-2">
-            {images.filter(img => img.type === 'folder').map((folder) => (
-              <button
-                key={folder.id}
-                onClick={() => handleFolderChange(folder.filePath)}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-              >
-                <FolderOpen className="w-4 h-4 mr-1" />
-                {folder.name}
-              </button>
-            ))}
+            {images
+              .filter((img) => img.type === "folder")
+              .map((folder) => (
+                <button
+                  key={folder.id}
+                  onClick={() => handleFolderChange(folder.filePath)}
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                >
+                  <FolderOpen className="w-4 h-4 mr-1" />
+                  {folder.name}
+                </button>
+              ))}
           </div>
-          
+
           <div className="mt-4 text-sm text-gray-600">
-            File: {filteredImages.length} | Cartelle: {images.filter(img => img.type === 'folder').length}
+            File: {filteredImages.length} | Cartelle:{" "}
+            {images.filter((img) => img.type === "folder").length}
           </div>
         </div>
 
@@ -444,8 +535,16 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
           <h2 className="text-xl font-semibold mb-4">
             File ImageKit in {currentPath === "/" ? "Root" : currentPath}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredImages.map((image) => (
+          {isLoadingFiles ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex items-center space-x-2 text-gray-500">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <span>Caricamento file...</span>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {filteredImages.map((image) => (
               <div
                 key={image.id}
                 className={`relative group border-2 rounded-lg overflow-hidden ${
@@ -471,7 +570,14 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
                         title="Seleziona immagine"
                       />
                     </div>
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      <button
+                        onClick={() => openRenameModal(image.id)}
+                        className="p-1 bg-white bg-opacity-80 rounded-full hover:bg-opacity-100"
+                        title="Rinomina file"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
                       <button
                         onClick={() => openTagModal(image.id)}
                         className="p-1 bg-white bg-opacity-80 rounded-full hover:bg-opacity-100"
@@ -501,14 +607,15 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Tag Modal */}
         {showTagModal && currentImage && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full max-w-md mx-4 sm:mx-0">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Gestisci Tag</h3>
                 <button
@@ -521,7 +628,7 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
               </div>
 
               <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   {currentImage.name}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -559,6 +666,53 @@ export default function AdminDashboard({ authToken }: AdminDashboardProps) {
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Rename Modal */}
+        {showRenameModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full max-w-md mx-4 sm:mx-0">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Rinomina File</h3>
+                <button
+                  onClick={() => setShowRenameModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                  title="Chiudi"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
+                  Nome file:
+                </label>
+                <input
+                  type="text"
+                  value={newFileName}
+                  onChange={(e) => setNewFileName(e.target.value)}
+                  placeholder="Nome del file"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onKeyPress={(e) => e.key === "Enter" && renameFile()}
+                />
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setShowRenameModal(false)}
+                  className="px-4 py-2 text-gray-600 dark:text-gray-400 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={renameFile}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Rinomina
+                </button>
               </div>
             </div>
           </div>
