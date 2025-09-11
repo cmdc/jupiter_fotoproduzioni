@@ -13,7 +13,7 @@ export default function AdminPage() {
   useEffect(() => {
     setIsMounted(true);
     // Check if user is already authenticated
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem("adminToken");
     if (token) {
       setAuthToken(token);
       setIsAuthenticated(true);
@@ -22,12 +22,12 @@ export default function AdminPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch('/api/admin/auth', {
-        method: 'POST',
+      const response = await fetch("/api/admin/auth", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ password }),
       });
@@ -39,12 +39,12 @@ export default function AdminPage() {
         setIsAuthenticated(true);
         setError("");
         // Store token in localStorage for the session
-        localStorage.setItem('adminToken', data.token);
+        localStorage.setItem("adminToken", data.token);
       } else {
         setError(data.error || "Password non valida");
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       setError("Errore di connessione");
     }
   };
@@ -59,10 +59,10 @@ export default function AdminPage() {
         <head>
           <meta name="robots" content="noindex, nofollow" />
         </head>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center">
           <div className="max-w-md w-full space-y-8">
             <div>
-              <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              <h2 className="mt-6 text-center text-3xl font-extrabold ">
                 Accesso Admin
               </h2>
             </div>
