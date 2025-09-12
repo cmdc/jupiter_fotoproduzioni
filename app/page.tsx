@@ -25,20 +25,22 @@ export default function Home() {
           <div className="inline-block mb-3">
             <Logo className="h-32 lg:h-44 w-auto" animate />
           </div>
-          <h1 className="text-5xl font-bold tracking-tight sm:text-6xl select-none">
+          {/* <h1 className="text-5xl font-bold tracking-tight sm:text-6xl select-none">
             <AnimatedText
-              text="Jupiter"
+              text=" Jupiter"
               once
               className="text-5xl font-bold tracking-tight sm:text-6xl select-none"
             />
-          </h1>
+          </h1> */}
           <p className="mt-6 text-sm  md:text-md leading-6 md:leading-8 text-muted-foreground select-none">
             Fotografo Professionista
           </p>
           <blockquote>
-            <p className="mt-6 text-md md:text-xl font-bold md:font-normal  underline-offset-4	 leading-8 select-none">
-              Catturando emozioni autentiche attraverso l&apos;obiettivo.
-            </p>
+            <AnimatedText
+              className="mt-6 text-md md:text-xl font-bold md:font-normal  underline-offset-4	 leading-8 select-none"
+              once
+              text="Catturando emozioni autentiche attraverso l'obiettivo."
+            />
           </blockquote>
           <p className="my-6 mb-12 text-sm md:leading-8 text-muted-foreground select-none">
             Matrimoni • Eventi • Ritratti in Basilicata

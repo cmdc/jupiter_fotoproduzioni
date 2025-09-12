@@ -20,7 +20,8 @@
       "WebSearch",
       "Bash(yarn dev)",
       "Bash(npm i:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(claude doctor)"
     ],
     "deny": [],
     "ask": []
