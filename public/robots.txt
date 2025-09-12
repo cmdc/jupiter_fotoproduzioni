@@ -1,0 +1,42 @@
+# Robots.txt per Jupiter Fotoproduzioni - Luigi Bruno Fotografo
+# https://jupiterfoto.it
+
+User-agent: *
+Allow: /
+
+# Priorità delle sezioni principali
+Allow: /photography/
+Allow: /projects/
+Allow: /about/
+
+# File importanti per SEO
+Allow: /sitemap.xml
+Allow: /sitemap-index.xml
+
+# Block di sicurezza
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /.git/
+
+# Sitemap location
+Sitemap: https://jupiterfoto.it/sitemap.xml
+Sitemap: https://jupiterfoto.it/sitemap-index.xml
+
+# Cache delle immagini consentita per i motori di ricerca
+User-agent: Googlebot
+Allow: /images/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+
+User-agent: Bingbot
+Allow: /images/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+
+# Crawl-delay per rispettare i server
+Crawl-delay: 1

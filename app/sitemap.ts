@@ -4,7 +4,7 @@ import { getDataPhotographs } from '@/utils/imagekit-fetches'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jupiterfoto.it'
 
-  // Static pages
+  // Static pages - Jupiter Fotoproduzioni SEO optimized
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -35,6 +35,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
+    },
+    // Aggiunte pagine specifiche per SEO Jupiter Fotoproduzioni
+    {
+      url: `${baseUrl}/photography/matrimoni`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/photography/eventi`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/photography/ritratti`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/photography/book-matrimoniali`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/projects`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
     },
   ]
 
