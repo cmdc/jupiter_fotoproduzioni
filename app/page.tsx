@@ -20,10 +20,10 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <AnimationWrapper>
-      <div className="flex relative isolate items-center justify-center h-[calc(100vh-160px)] align-middle px-5">
+      <div className="flex relative isolate items-center justify-center h-[calc(100vh-180px)] sm:h-[calc(100vh-160px)] align-middle px-4 sm:px-5">
         <div className="text-center select-none">
-          <div className="inline-block mb-3">
-            <Logo className="h-32 lg:h-44 w-auto" animate />
+          <div className="inline-block mb-2 sm:mb-3">
+            <Logo className="h-24 sm:h-32 md:h-36 lg:h-44 w-auto" animate />
           </div>
           {/* <h1 className="text-5xl font-bold tracking-tight sm:text-6xl select-none">
             <AnimatedText
@@ -32,21 +32,21 @@ export default function Home() {
               className="text-5xl font-bold tracking-tight sm:text-6xl select-none"
             />
           </h1> */}
-          <p className="mt-6 text-sm  md:text-md leading-6 md:leading-8 text-muted-foreground select-none">
+          <p className="mt-3 sm:mt-6 text-sm md:text-md leading-5 sm:leading-6 md:leading-8 text-muted-foreground select-none">
             Fotografo Professionista
           </p>
           <blockquote>
             <AnimatedText
-              className="mt-6 text-md md:text-xl font-bold md:font-normal  underline-offset-4	 leading-8 select-none"
+              className="mt-3 sm:mt-6 text-sm sm:text-md md:text-xl font-bold md:font-normal underline-offset-4 leading-6 sm:leading-8 select-none"
               once
               text="Catturando emozioni autentiche attraverso l'obiettivo."
             />
           </blockquote>
-          <p className="my-6 mb-12 text-sm md:leading-8 text-muted-foreground select-none">
+          <p className="my-3 sm:my-6 mb-6 sm:mb-12 text-sm md:leading-8 text-muted-foreground select-none">
             Matrimoni • Eventi • Ritratti in Basilicata
           </p>
           <Separator />
-          <div className="pt-12 text-xs md:text-normal mb-5 lg:hidden opacity-60 select-none">
+          <div className="pt-6 sm:pt-12 text-xs md:text-normal mb-3 sm:mb-5 lg:hidden opacity-60 select-none">
             <MenuElements className="md:p-5" />
           </div>
           <ThemeToggle className="test lg:hidden opacity-60" />

@@ -21,7 +21,10 @@
       "Bash(yarn dev)",
       "Bash(npm i:*)",
       "Bash(npm uninstall:*)",
-      "Bash(claude doctor)"
+      "Bash(claude doctor)",
+      "Bash(claude --version)",
+      "Bash(npm:*)",
+      "Bash(yarn --version)"
     ],
     "deny": [],
     "ask": []
