@@ -19,7 +19,8 @@ const courierFont = Courier_Prime({
 export const metadata: Metadata = {
   title: {
     template: "Jupiter Fotoproduzioni - Luigi Bruno | %s",
-    default: "Luigi Bruno Fotografo - Jupiter Fotoproduzioni | Matrimoni e Eventi Basilicata",
+    default:
+      "Luigi Bruno Fotografo - Jupiter Fotoproduzioni | Matrimoni e Eventi Basilicata",
   },
   description:
     "Jupiter Fotoproduzioni di Luigi Bruno, fotografo professionista specializzato in matrimoni e eventi a Potenza, Satriano di Lucania e tutta la Basilicata. Servizi fotografici di alta qualità, book matrimoniali esclusivi, reportage eventi aziendali e ritratti artistici. Studio fotografico professionale per matrimoni, cerimonie religiose, ricevimenti e servizi pre-matrimoniali in Basilicata e Sud Italia.",
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
     "servizio fotografico matrimonio completo",
     "fotografia professionale eventi",
     "studio Jupiter Fotoproduzioni",
-    "Luigi Bruno wedding photographer"
+    "Luigi Bruno wedding photographer",
   ],
   authors: [{ name: "Luigi Bruno", url: "https://jupiterfoto.it" }],
   creator: "Luigi Bruno - Jupiter Fotoproduzioni",
@@ -70,7 +71,8 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Jupiter Fotoproduzioni - Luigi Bruno Fotografo | Matrimoni e Eventi Basilicata",
+    title:
+      "Jupiter Fotoproduzioni - Luigi Bruno Fotografo | Matrimoni e Eventi Basilicata",
     description:
       "Jupiter Fotoproduzioni, studio fotografico professionale di Luigi Bruno specializzato in matrimoni e eventi a Potenza, Satriano di Lucania e Basilicata. Book matrimoniali esclusivi, reportage eventi aziendali e servizi fotografici di alta qualità. Cattura i tuoi momenti più preziosi con stile, eleganza e professionalità.",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://jupiterfoto.it",
@@ -88,7 +90,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jupiter Fotoproduzioni - Luigi Bruno | Fotografo Matrimoni Basilicata",
+    title:
+      "Jupiter Fotoproduzioni - Luigi Bruno | Fotografo Matrimoni Basilicata",
     description:
       "Jupiter Fotoproduzioni - Luigi Bruno, fotografo professionista specializzato in matrimoni e eventi a Potenza, Satriano di Lucania e Basilicata. Book matrimoniali e servizi fotografici di alta qualità.",
     images: ["/logo.png"],

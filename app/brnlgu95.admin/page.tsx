@@ -62,12 +62,7 @@ export default function AdminPage() {
         </Head>
         <div className="min-h-screen flex items-center justify-center">
           <div className="max-w-md w-full space-y-8">
-            <div>
-              <h2 className="mt-6 text-center text-3xl font-extrabold ">
-                Accesso Admin
-              </h2>
-            </div>
-            <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+            <form className="mt-8 space-y-6 mx-6" onSubmit={handleLogin}>
               <div>
                 <label htmlFor="password" className="sr-only">
                   Password
@@ -77,7 +72,7 @@ export default function AdminPage() {
                   name="password"
                   type="password"
                   required
-                  className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 dark:placeholder-gray-200 text-gray-900 dark:text-gray-600 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 dark:placeholder-gray-200 text-gray-900 dark:text-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
